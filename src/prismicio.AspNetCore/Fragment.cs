@@ -231,8 +231,9 @@ namespace prismic
             public ISet<string> Tags { get; }
             public string Slug { get; }
             public bool IsBroken { get; }
+            public string Lang { get; }
 
-            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, IDictionary<string, Fragment> fragments, Boolean broken)
+            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, Fragment> fragments, Boolean broken)
                 : base(fragments)
             {
                 Id = id;
@@ -241,6 +242,7 @@ namespace prismic
                 Tags = tags;
                 Slug = slug;
                 IsBroken = broken;
+                Lang = lang;
             }
 
             public string GetUrl(DocumentLinkResolver resolver) => resolver.Resolve(this);
@@ -254,6 +256,7 @@ namespace prismic
                 string id = (string)document["id"];
                 string type = (string)document["type"];
                 string slug = (string)document["slug"];
+				string lang = (string)document["lang"];
                 string uid = null;
                 if (document["uid"] != null)
                     uid = (string)document["uid"];
@@ -263,7 +266,7 @@ namespace prismic
                 else
                     tags = new HashSet<String>();
                 IDictionary<string, Fragment> fragments = Document.ParseFragments(json["document"]);
-                return new DocumentLink(id, uid, type, tags, slug, fragments, broken);
+                return new DocumentLink(id, uid, type, tags, slug, lang, fragments, broken);
             }
 
         }

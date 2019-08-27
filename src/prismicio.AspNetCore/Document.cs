@@ -14,8 +14,10 @@ namespace prismic
         public IList<string> Slugs { get; }
         public string Slug => Slugs.Count > 0 ? Slugs[0] : "-";
         public string Type { get; }
+        public string Lang { get; }
+        public IList<AlternateLanguage> AlternateLanguages { get; }
 
-        public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, IDictionary<string, Fragment> fragments)
+        public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, string lang, IList<AlternateLanguage> alternateLanguages, IDictionary<string, Fragment> fragments)
             : base(fragments)
         {
             Id = id;
@@ -24,9 +26,11 @@ namespace prismic
             Href = href;
             Tags = tags;
             Slugs = slugs;
+            Lang = lang;
+            AlternateLanguages = alternateLanguages;
         }
 
-        public fragments.DocumentLink AsDocumentLink() => new fragments.DocumentLink(Id, Uid, Type, Tags, Slugs[0], this.Fragments, false);
+        public fragments.DocumentLink AsDocumentLink() => new fragments.DocumentLink(Id, Uid, Type, Tags, Slugs[0], Lang, Fragments, false);
 
         public static IDictionary<string, Fragment> ParseFragments(JToken json)
         {
@@ -44,7 +48,7 @@ namespace prismic
             }
             foreach (var field in ((JObject)json["data"][type]))
             {
-				var fragmentName = $"{type}.{field.Key}";
+                var fragmentName = $"{type}.{field.Key}";
                 if (field.Value is JArray)
                 {
                     var i = 0;
@@ -63,15 +67,15 @@ namespace prismic
         }
 
         private static Fragment MapFragment(JToken field)
-			=> prismic.fragments.FragmentParser.Parse((string)field["type"], field["value"]);
+            => prismic.fragments.FragmentParser.Parse((string)field["type"], field["value"]);
 
-		private static void AddFragment(IDictionary<string, Fragment> fragments, string name, Fragment fragment)
-		{
-			if(fragment == null)
-				return;
+        private static void AddFragment(IDictionary<string, Fragment> fragments, string name, Fragment fragment)
+        {
+            if (fragment == null)
+                return;
 
-			fragments[name] = fragment;
-		}
+            fragments[name] = fragment;
+        }
 
         public static Document Parse(JToken json)
         {
@@ -79,13 +83,15 @@ namespace prismic
             var uid = (string)json["uid"];
             var href = (string)json["href"];
             var type = (string)json["type"];
+            var lang = (string)json["lang"];
+            var alternateLanguageJson = json["alternate_languages"] ?? new JArray();
 
             var tags = new HashSet<string>(json["tags"].Select(r => (string)r));
             var slugs = json["slugs"].Select(r => WebUtility.UrlDecode((string)r)).ToList();
+            IList<AlternateLanguage> alternateLanguages = alternateLanguageJson.Select(l => AlternateLanguage.Parse(l)).ToList();
             var fragments = ParseFragments(json);
 
-            return new Document(id, uid, type, href, tags, slugs, fragments);
+            return new Document(id, uid, type, href, tags, slugs, lang, alternateLanguages, fragments);
         }
     }
 }
-

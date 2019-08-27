@@ -55,16 +55,19 @@ namespace prismic
         /**
          * Retrieve multiple documents from their IDS
          */
-        public Form.SearchForm GetByIDs(IEnumerable<string> ids) => Query(Predicates.@in("document.id", ids));
+        public Form.SearchForm GetByIDs(IEnumerable<string> ids, string reference = null, string lang = null) 
+            => Query(Predicates.@in("document.id", ids))
+                .Ref(reference)
+                .Lang(lang);
 
         /**
          * Return the first document matching the predicate
          */
-        public async Task<Document> QueryFirst(IPredicate p, string reference = null)
+        public async Task<Document> QueryFirst(IPredicate p, string reference = null, string lang = null)
         {
             SetReferenceOrMaster(reference);
 
-            var response = await this.Query(p).Ref(reference).Submit();
+            var response = await Query(p).Ref(reference).Lang(lang).Submit();
             var results = response.Results;
             if (results.Count() > 0)
             {
@@ -81,11 +84,11 @@ namespace prismic
          *
          * @return the document, or null if it doesn't exist
          */
-        public Task<Document> GetByID(string documentId, string reference = null)
+        public Task<Document> GetByID(string documentId, string reference = null, string lang = null)
         {
             SetReferenceOrMaster(reference);
 
-            return QueryFirst(Predicates.at("document.id", documentId), reference);
+            return QueryFirst(Predicates.at("document.id", documentId), reference, lang);
         }
 
         /**
@@ -93,18 +96,18 @@ namespace prismic
          *
          * @return the document, or null if it doesn't exist
          */
-        public Task<Document> GetByUID(string documentType, string documentUid, string reference = null)
+        public Task<Document> GetByUID(string documentType, string documentUid, string reference = null, string lang = null)
         {
             SetReferenceOrMaster(reference);
 
-            return QueryFirst(Predicates.at("my." + documentType + ".uid", documentUid), reference);
+            return QueryFirst(Predicates.at("my." + documentType + ".uid", documentUid), reference, lang);
         }
 
         public Task<Document> GetBookmark(string bookmark, string reference = null)
         {
             SetReferenceOrMaster(reference);
 
-            return this.GetByID(this.apiData.Bookmarks[bookmark], reference);
+            return GetByID(apiData.Bookmarks[bookmark], reference);
         }
 
         /**
@@ -115,7 +118,7 @@ namespace prismic
         *                (usually the home page of your site)
         * @return the URL you should redirect the user to preview the requested change
         */
-        public async Task<String> PreviewSession(string token, DocumentLinkResolver linkResolver, string defaultUrl)
+        public async Task<string> PreviewSession(string token, DocumentLinkResolver linkResolver, string defaultUrl)
         {
             var tokenJson = await this.PrismicHttpClient.Fetch(token, logger, cache);
             var mainDocumentId = tokenJson["mainDocument"];
@@ -126,6 +129,7 @@ namespace prismic
             var resp = await Form("everything")
                 .Query(Predicates.at("document.id", mainDocumentId.ToString()))
                 .Ref(token)
+                .Lang()
                 .Submit();
             if (resp.Results.Count == 0)
             {

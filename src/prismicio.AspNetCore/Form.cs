@@ -115,7 +115,7 @@ namespace prismic
              * @param value the value with which to set it
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Set(String field, String value)
+            public SearchForm Set(string field, string value)
             {
                 if (value == null)
                 {
@@ -129,14 +129,14 @@ namespace prismic
                 }
                 if (fieldDesc.IsMultiple)
                 {
-                    IList<String> existingValue;
+                    IList<string> existingValue;
                     if (data.ContainsKey(field))
                     {
                         existingValue = data[field];
                     }
                     else
                     {
-                        existingValue = new List<String>();
+                        existingValue = new List<string>();
                     }
                     existingValue.Add(value);
                     data[field] = new StringValues(existingValue.ToArray());
@@ -154,7 +154,7 @@ namespace prismic
              * @param value target value
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Set(String field, int value)
+            public SearchForm Set(string field, int value)
             {
                 Field fieldDesc = form.Fields[field];
                 if (fieldDesc == null)
@@ -194,7 +194,7 @@ namespace prismic
              * @param ref the ID of the ref on which you wish to query
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Ref(String myref) => Set("ref", myref);
+            public SearchForm Ref(string myref) => Set("ref", myref);
 
             /**
              * Allows to set the size of the pagination of the query's response.
@@ -205,7 +205,7 @@ namespace prismic
              * @param pageSize the size of the pagination you wish
              * @return the current form, in order to chain those calls
              */
-            public SearchForm PageSize(String pageSize) => Set("pageSize", pageSize);
+            public SearchForm PageSize(string pageSize) => Set("pageSize", pageSize);
 
             /**
              * Allows to set the size of the pagination of the query's response.
@@ -219,6 +219,14 @@ namespace prismic
             public SearchForm PageSize(int pageSize) => Set("pageSize", pageSize);
 
             /**
+			 * Set the language you want to get for your query.
+			 *
+			 * @param lang the language code you wish
+			 * @return the current form, in order to chain those calls
+			 */
+            public SearchForm Lang(string lang = null) => Set("lang", lang ?? "*");
+            
+            /**
             * Allows to set which page you want to get for your query.
             *
             * The default value is 1; a call for a different page will look like:
@@ -228,7 +236,7 @@ namespace prismic
             * @param page the page number
             * @return the current form, in order to chain those calls
             */
-            public SearchForm Page(String page) => Set("page", page);
+            public SearchForm Page(string page) => Set("page", page);
 
             /**
              * Allows to set which page you want to get for your query.
@@ -252,7 +260,7 @@ namespace prismic
              * @param orderings the orderings
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Orderings(String orderings) => Set("orderings", orderings);
+            public SearchForm Orderings(string orderings) => Set("orderings", orderings);
 
             /**
              * Start the results after the id passed in parameter. Useful to get the documment following
@@ -261,7 +269,7 @@ namespace prismic
              * @param orderings the orderings
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Start(String id) => Set("start", id);
+            public SearchForm Start(string id) => Set("start", id);
 
             /**
              * Restrict the document fragments to the set of fields specified.
@@ -269,7 +277,7 @@ namespace prismic
              * @param fields the fields to return
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Fetch(params String[] fields)
+            public SearchForm Fetch(params string[] fields)
             {
                 if (fields.Length == 0)
                 {
@@ -287,7 +295,7 @@ namespace prismic
              * @param fields the fields to return
              * @return the current form, in order to chain those calls
              */
-            public SearchForm FetchLinks(params String[] fields)
+            public SearchForm FetchLinks(params string[] fields)
             {
                 if (fields.Length == 0)
                 {
@@ -302,9 +310,9 @@ namespace prismic
             // Temporary hack for Backward compatibility
             private string Strip(String q)
             {
-                if (q == null) 
+                if (q == null)
                     return "";
-                
+
                 var tq = q.Trim();
                 if (tq.IndexOf("[") == 0 && tq.LastIndexOf("]") == tq.Length - 1)
                 {
@@ -404,7 +412,7 @@ namespace prismic
             var qb = new QueryBuilder();
 
             foreach (var value in values)
-				qb.Add(value.Key, value.Value.ToString());
+                qb.Add(value.Key, value.Value.ToString());
 
             return qb.ToString();
         }
