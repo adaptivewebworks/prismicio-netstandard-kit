@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace prismic.AspNetCore.Tests
 {
-
     public class DocTest
     {
         [Fact]
@@ -43,6 +41,25 @@ namespace prismic.AspNetCore.Tests
             var author = doc.GetText("test_document.text");
             // endgist
             Assert.Equal("Test Document Text", author); // gisthide
+        }
+
+        [Fact]
+        public void DocumentLangTest()
+        {
+            var document = Fixtures.GetDocument("language.json");
+            Assert.Equal("de-ch", document.Lang);
+
+            var lang1 = new AlternateLanguage("WZ1iGioAACkA7Kqn", "french", "article", "fr-fr");
+            Assert.Equal(lang1.Id, document.AlternateLanguages[0].Id);
+            Assert.Equal(lang1.Lang, document.AlternateLanguages[0].Lang);
+            Assert.Equal(lang1.Type, document.AlternateLanguages[0].Type);
+            Assert.Equal(lang1.UID, document.AlternateLanguages[0].UID);
+
+            var lang2 = new AlternateLanguage("WZ1iPyoAACkA7KtJ", "spanish", "article", "es-es");
+            Assert.Equal(lang2.Id, document.AlternateLanguages[1].Id);
+            Assert.Equal(lang2.Lang, document.AlternateLanguages[1].Lang);
+            Assert.Equal(lang2.Type, document.AlternateLanguages[1].Type);
+            Assert.Equal(lang2.UID, document.AlternateLanguages[1].UID);
         }
 
         [Fact]
@@ -138,9 +155,10 @@ namespace prismic.AspNetCore.Tests
             var json = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"location\":{\"type\":\"GeoPoint\",\"value\":{\"latitude\":48.877108,\"longitude\":2.333879}}}}}";
             var document = Document.Parse(JObject.Parse(json));
             fragments.GeoPoint place = document.GetGeoPoint("article.location");
+#pragma warning disable IDE0059 
             var coordinates = place.Latitude + "," + place.Longitude;
             // endgist
-#pragma warning restore CS0219 // Variable is assigned but its value is never used
+#pragma warning restore IDE0059 // Variable is assigned but its value is never used
             Assert.Equal(48.877108, place.Latitude);
             Assert.Equal(2.333879, place.Longitude);
         }

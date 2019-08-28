@@ -18,7 +18,10 @@ namespace prismic
         public DateTime? FirstPublicationDate { get; }
         public DateTime? LastPublicationDate { get; }
 
-        public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, IDictionary<string, Fragment> fragments, DateTime? firstPublicationDate, DateTime? lastPublicationDate)
+        public string Lang { get; }
+        public IList<AlternateLanguage> AlternateLanguages { get; }
+
+        public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, string lang, IList<AlternateLanguage> alternateLanguages, IDictionary<string, Fragment> fragments, DateTime? firstPublicationDate, DateTime? lastPublicationDate)
             : base(fragments)
         {
             Id = id;
@@ -27,11 +30,13 @@ namespace prismic
             Href = href;
             Tags = tags;
             Slugs = slugs;
+            Lang = lang;
+            AlternateLanguages = alternateLanguages;
             FirstPublicationDate = firstPublicationDate;
             LastPublicationDate = lastPublicationDate;
         }
 
-        public fragments.DocumentLink AsDocumentLink() => new fragments.DocumentLink(Id, Uid, Type, Tags, Slugs[0], this.Fragments, false);
+        public fragments.DocumentLink AsDocumentLink() => new fragments.DocumentLink(Id, Uid, Type, Tags, Slugs[0], Lang, Fragments, false);
 
         public static IDictionary<string, Fragment> ParseFragments(JToken json)
         {
@@ -50,10 +55,10 @@ namespace prismic
             foreach (var field in ((JObject)json["data"][type]))
             {
                 var fragmentName = $"{type}.{field.Key}";
-                if (field.Value is JArray)
+                if (field.Value is JArray rawFragments)
                 {
                     var i = 0;
-                    foreach (JToken elt in ((JArray)field.Value))
+                    foreach (JToken elt in rawFragments)
                     {
                         fragmentName = type + "." + field.Key + "[" + i++ + "]";
                         AddFragment(fragments, $"{fragmentName}[{i++}]", MapFragment(elt));
@@ -86,12 +91,15 @@ namespace prismic
             var type = (string)json["type"];
             var firstPublicationDate = (DateTime?)json["first_publication_date"];
             var lastPublicationDate = (DateTime?)json["last_publication_date"];
+            var lang = (string)json["lang"];
+            var alternateLanguageJson = json["alternate_languages"] ?? new JArray();
 
             var tags = new HashSet<string>(json["tags"].Select(r => (string)r));
             var slugs = json["slugs"].Select(r => WebUtility.UrlDecode((string)r)).ToList();
+            IList<AlternateLanguage> alternateLanguages = alternateLanguageJson.Select(l => AlternateLanguage.Parse(l)).ToList();
             var fragments = ParseFragments(json);
 
-            return new Document(id, uid, type, href, tags, slugs, fragments, firstPublicationDate, lastPublicationDate);
+            return new Document(id, uid, type, href, tags, slugs, lang, alternateLanguages, fragments, firstPublicationDate, lastPublicationDate);
         }
     }
 }
