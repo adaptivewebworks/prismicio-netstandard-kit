@@ -13,10 +13,10 @@ namespace prismic
         public string Href { get; }
         public ISet<string> Tags { get; }
         public IList<string> Slugs { get; }
-        public string Slug => Slugs.Count >  0 ? Slugs[0] : "-";
+        public string Slug => Slugs.Count > 0 ? Slugs[0] : "-";
         public string Type { get; }
         public DateTime? FirstPublicationDate { get; }
-		public DateTime? LastPublicationDate { get; }
+        public DateTime? LastPublicationDate { get; }
 
         public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, IDictionary<string, Fragment> fragments, DateTime? firstPublicationDate, DateTime? lastPublicationDate)
             : base(fragments)
@@ -49,7 +49,7 @@ namespace prismic
             }
             foreach (var field in ((JObject)json["data"][type]))
             {
-				var fragmentName = $"{type}.{field.Key}";
+                var fragmentName = $"{type}.{field.Key}";
                 if (field.Value is JArray)
                 {
                     var i = 0;
@@ -68,15 +68,15 @@ namespace prismic
         }
 
         private static Fragment MapFragment(JToken field)
-			=> prismic.fragments.FragmentParser.Parse((string)field["type"], field["value"]);
+            => prismic.fragments.FragmentParser.Parse((string)field["type"], field["value"]);
 
-		private static void AddFragment(IDictionary<string, Fragment> fragments, string name, Fragment fragment)
-		{
-			if(fragment == null)
-				return;
+        private static void AddFragment(IDictionary<string, Fragment> fragments, string name, Fragment fragment)
+        {
+            if (fragment == null)
+                return;
 
-			fragments[name] = fragment;
-		}
+            fragments[name] = fragment;
+        }
 
         public static Document Parse(JToken json)
         {
@@ -84,8 +84,8 @@ namespace prismic
             var uid = (string)json["uid"];
             var href = (string)json["href"];
             var type = (string)json["type"];
-            var firstPublicationDate = (DateTime?) json["first_publication_date"];
-			var lastPublicationDate = (DateTime?)json["last_publication_date"];
+            var firstPublicationDate = (DateTime?)json["first_publication_date"];
+            var lastPublicationDate = (DateTime?)json["last_publication_date"];
 
             var tags = new HashSet<string>(json["tags"].Select(r => (string)r));
             var slugs = json["slugs"].Select(r => WebUtility.UrlDecode((string)r)).ToList();
@@ -95,4 +95,3 @@ namespace prismic
         }
     }
 }
-
