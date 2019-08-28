@@ -1,14 +1,32 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace prismic.AspNetCore.Tests
 {
-    
-	public class DocTest
+
+    public class DocTest
 	{
+		[Fact]
+		public void DocumentLangTest()
+		{
+			var document = Fixtures.GetDocument("language.json");
+			Assert.Equal("de-ch", document.Lang);
+
+			var lang1 = new AlternateLanguage("WZ1iGioAACkA7Kqn", "french", "article", "fr-fr");
+			Assert.Equal(lang1.Id, document.AlternateLanguages[0].Id);
+			Assert.Equal(lang1.Lang, document.AlternateLanguages[0].Lang);
+			Assert.Equal(lang1.Type, document.AlternateLanguages[0].Type);
+			Assert.Equal(lang1.UID, document.AlternateLanguages[0].UID);
+
+			var lang2 = new AlternateLanguage("WZ1iPyoAACkA7KtJ", "spanish", "article", "es-es");
+			Assert.Equal(lang2.Id, document.AlternateLanguages[1].Id);
+			Assert.Equal(lang2.Lang, document.AlternateLanguages[1].Lang);
+			Assert.Equal(lang2.Type, document.AlternateLanguages[1].Type);
+			Assert.Equal(lang2.UID, document.AlternateLanguages[1].UID);
+		}
+
         [Fact]
 		public void AllPredicatesTest ()
 		{
