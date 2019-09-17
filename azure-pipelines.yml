@@ -38,12 +38,13 @@ steps:
   displayName: 'Create nuget package for version $(Package Version)'
   inputs:
     command: pack
+    
     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
     nobuild: true
     includesymbols: true
     includesource: true
     versioningScheme: 'byEnvVar'
-    versionEnvVar: $(Package Version)
+    versionEnvVar: Package Version
     arguments: '--output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
 
