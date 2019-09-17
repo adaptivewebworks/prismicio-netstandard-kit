@@ -29,7 +29,7 @@ steps:
     includesource: true
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'PACKAGE_VERSION'
-    
+    arguments: '-o $(Build.ArtifactStagingDirectory)'
 
 # - task: NuGetCommand@2
 #   inputs:
