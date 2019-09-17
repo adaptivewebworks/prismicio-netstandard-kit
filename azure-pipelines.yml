@@ -14,15 +14,31 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test --configuration $(buildConfiguration) --no-build
-  displayName: 'dotnet test $(buildConfiguration)'
+# - script: dotnet build --configuration $(buildConfiguration)
+#   displayName: 'dotnet build $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: 'Build for $(buildConfiguration)'
+  inputs:
+    command: build
+    includesource: true
+    includesymbols: true
+    configuration:  $(buildConfiguration)
+  
+# - script: dotnet test --configuration $(buildConfiguration) --no-build
+#   displayName: 'dotnet test $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: 'Test for $(buildConfiguration)'
+  inputs:
+    command: build
+    nobuild: true
+    configuration:  $(buildConfiguration)
+    zipAfterPublish: true
 
 - task: DotNetCoreCLI@2
+  displayName: 'Create nuget package for version $(PACKAGE_VERSION)'
   inputs:
-    command: 'pack'
+    command: pack
     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
     nobuild: true
     includesymbols: true
