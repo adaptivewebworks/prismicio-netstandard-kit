@@ -39,12 +39,10 @@ steps:
   inputs:
     command: pack
     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-    arguments: -c $(buildConfiguration)
+    arguments: -c $(buildConfiguration) --version-suffix "-alpha-$(Build.BuildNumber)"
     nobuild: true
     includesymbols: true
     includesource: true
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: Package Version
     outputDir: $(Build.ArtifactStagingDirectory)/packages
     zipAfterPublish: true
 
