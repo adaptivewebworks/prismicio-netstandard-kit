@@ -27,26 +27,26 @@ steps:
   
 # - script: dotnet test --configuration $(buildConfiguration) --no-build
 #   displayName: 'dotnet test $(buildConfiguration)'
-# - task: DotNetCoreCLI@2
-#   displayName: 'Test for $(buildConfiguration)'
-#   inputs:
-#     command: test
-#     nobuild: true
-#     configuration:  $(buildConfiguration)
+- task: DotNetCoreCLI@2
+  displayName: 'Test for $(buildConfiguration)'
+  inputs:
+    command: test
+    nobuild: true
+    arguments: -c $(buildConfiguration)
 
-# - task: DotNetCoreCLI@2
-#   displayName: 'Create nuget package for version $(Package Version)'
-#   inputs:
-#     command: pack
-#     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-#     configuration: $(buildConfiguration)
-#     nobuild: true
-#     includesymbols: true
-#     includesource: true
-#     versioningScheme: 'byEnvVar'
-#     versionEnvVar: Package Version
-#     outputDir: $(Build.ArtifactStagingDirectory)
-#     zipAfterPublish: true
+- task: DotNetCoreCLI@2
+  displayName: 'Create nuget package for version $(Package Version)'
+  inputs:
+    command: pack
+    packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
+    arguments: -c $(buildConfiguration)
+    nobuild: true
+    includesymbols: true
+    includesource: true
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: Package Version
+    outputDir: $(Build.ArtifactStagingDirectory)/packages
+    zipAfterPublish: true
 
 # - task: NuGetCommand@2
 #   inputs:
