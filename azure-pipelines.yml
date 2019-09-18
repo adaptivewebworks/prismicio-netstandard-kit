@@ -15,6 +15,9 @@ variables:
 
 steps:
 
+- script: dotnet clean
+  displayName: 'Clean Build Directories'
+
 # - script: dotnet build --configuration $(buildConfiguration)
 #   displayName: 'dotnet build $(buildConfiguration)'
 - task: DotNetCoreCLI@2
@@ -35,11 +38,11 @@ steps:
     arguments: -c $(buildConfiguration)
 
 - task: DotNetCoreCLI@2
-  displayName: 'Create nuget package for version $(Package Version)'
+  displayName: 'Create NuGet package $(Package Version)'
   inputs:
     command: pack
     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-    arguments: -c $(buildConfiguration) --version-suffix "-alpha-$(Build.BuildNumber)"
+    arguments: /p:PackageVersion=$(Package Version) -c $(buildConfiguration)
     nobuild: true
     includesymbols: true
     includesource: true
