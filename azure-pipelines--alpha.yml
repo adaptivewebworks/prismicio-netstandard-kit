@@ -41,8 +41,8 @@ steps:
   displayName: 'Create NuGet Package'
   inputs:
     command: custom
-    packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-    arguments: pack -v m --version-suffix alpha-$(Build.BuildNumber)
+    custom: pack
+    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj --version-suffix alpha-$(Build.BuildNumber) -v m
     nobuild: true
     includesymbols: true
     includesource: true
