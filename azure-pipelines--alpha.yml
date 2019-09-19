@@ -13,6 +13,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  buildRevision: -$(date:yyyyMMdd)$(rev:-r)
 
 steps:
 
@@ -43,7 +44,7 @@ steps:
   inputs:
     command: custom
     custom: pack
-    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj --version-suffix alpha-$(Build.BuildNumber) -v m
+    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj --version-suffix alpha-$(buildRevision) -v m
     nobuild: true
     includesymbols: true
     includesource: true
