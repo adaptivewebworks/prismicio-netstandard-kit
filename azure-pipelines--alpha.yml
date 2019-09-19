@@ -3,7 +3,7 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-name: $(Build.DefinitionName)-$(date:yyyyMMdd)$(rev:-r)
+name: alpha-$(date:yyyyMMdd)$(rev:-r)
 
 trigger:
 - dev
