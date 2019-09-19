@@ -3,6 +3,7 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+name: $(Build.DefinitionName)-$(date:yyyyMMdd)$(rev:-r)
 
 trigger:
 - dev
@@ -42,7 +43,7 @@ steps:
   inputs:
     command: custom
     custom: pack
-    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj --version-suffix alpha-$(BuildId) -v m
+    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj --version-suffix alpha-$(Build.BuildNumber) -v m
     nobuild: true
     includesymbols: true
     includesource: true
