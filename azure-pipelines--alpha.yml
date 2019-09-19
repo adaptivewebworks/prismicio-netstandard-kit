@@ -5,7 +5,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+- dev
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -38,11 +38,11 @@ steps:
     arguments: -c $(buildConfiguration)
 
 - task: DotNetCoreCLI@2
-  displayName: 'Create NuGet package'
+  displayName: 'Create NuGet Package'
   inputs:
     command: pack
     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-    arguments: -c $(buildConfiguration)
+    arguments: -c $(buildConfiguration) --version-suffix "alpha.$(Build.BuildNumber)"
     nobuild: true
     includesymbols: true
     includesource: true
