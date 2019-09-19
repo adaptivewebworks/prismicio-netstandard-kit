@@ -42,16 +42,16 @@ steps:
   inputs:
     command: pack
     packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-    arguments: -c $(buildConfiguration) --version-suffix "alpha.$(Build.BuildNumber)"
+    arguments: -c $(buildConfiguration) --version-suffix "alpha-$(Build.BuildNumber)"
     nobuild: true
     includesymbols: true
     includesource: true
     outputDir: $(Build.ArtifactStagingDirectory)/packages
     zipAfterPublish: true
 
-# - task: NuGetCommand@2
-#   inputs:
-#     command: 'push'
-#     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-#     nuGetFeedType: 'external'
-#     publishFeedCredentials: 'NuGet.org'
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/*.nupkg;!$(Build.ArtifactStagingDirectory)/packages/*.symbols.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'NuGet.org'
