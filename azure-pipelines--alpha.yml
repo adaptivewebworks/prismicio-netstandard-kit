@@ -43,7 +43,7 @@ steps:
   inputs:
     command: custom
     custom: pack
-    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj --version-suffix $(Build.BuildNumber) -v m
+    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj -c $(buildConfiguration) --version-suffix $(Build.BuildNumber) -v m
     nobuild: true
     includesymbols: true
     includesource: true
