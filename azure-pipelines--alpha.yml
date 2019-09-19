@@ -13,7 +13,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  buildRevision: -$(date:yyyyMMdd)$(rev:-r)
+  buildRevision: -$[$(date:yyyyMMdd)$(rev:-r)]
 
 steps:
 
