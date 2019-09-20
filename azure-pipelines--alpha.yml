@@ -3,9 +3,10 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+name: alpha-$(date:yyyyMMdd)$(rev:-r)
 
 trigger:
-- master
+- dev
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -37,23 +38,11 @@ steps:
     arguments: -c $(buildConfiguration) --no-build
 
 - task: DotNetCoreCLI@2
-  displayName: 'Create NuGet package'
-  inputs:
-    command: pack
-    packagesToPack: 'src/prismicio.AspNetCore/prismicio.AspNetCore.csproj'
-    arguments: -c $(buildConfiguration) -v m
-    nobuild: true
-    includesymbols: true
-    includesource: true
-    outputDir: $(Build.ArtifactStagingDirectory)/packages
-    zipAfterPublish: true
-
-- task: DotNetCoreCLI@2
   displayName: 'Create NuGet Package'
   inputs:
     command: custom
     custom: pack
-    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages -v m --no-build --include-symbols
+    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages --version-suffix $(Build.BuildNumber) -v m --no-build --include-symbols
     zipAfterPublish: true
 
 - task: NuGetCommand@2

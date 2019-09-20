@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>2.0.0-alpha-03</Version>
+    <PackageId>prismicio.netstandard</PackageId>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Authors>Ben Embery</Authors>
+    <Company>Adaptive Webworks</Company>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
