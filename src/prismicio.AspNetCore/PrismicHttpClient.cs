@@ -33,7 +33,7 @@ namespace prismic
 
         private static readonly Regex maxAgeRe = new Regex(@"max-age=(\d+)");
 
-        private async Task<JToken> FetchImpl(string url, ILogger logger, ICache cache)
+        private async Task<JToken> FetchImpl(string url, ILogger _, ICache cache)
         {
             using (var response = await _client.GetAsync(url))
             {

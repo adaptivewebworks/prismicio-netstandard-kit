@@ -8,7 +8,9 @@ namespace prismic
 
         public string Resolve(Document doc) => Resolve(doc.AsDocumentLink());
 
+        #pragma warning disable IDE0060
         public string GetTitle(fragments.DocumentLink link) => null;
+        #pragma warning restore IDE0060
 
         public static DocumentLinkResolver For(Func<fragments.DocumentLink, string> resolver) => new LambdaDocumentLinkResolver(resolver);
     }

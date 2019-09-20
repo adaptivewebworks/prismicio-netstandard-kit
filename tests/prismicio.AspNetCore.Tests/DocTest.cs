@@ -10,6 +10,7 @@ namespace prismic.AspNetCore.Tests
         [Fact]
         public void AllPredicatesTest()
         {
+            #pragma warning disable IDE0059
             // startgist:e65ee8392a8b6c8aedc4:prismic-allPredicates.cs
             // "at" predicate: equality of a fragment to a value.
             var at = Predicates.at("document.type", "article");
@@ -22,6 +23,7 @@ namespace prismic.AspNetCore.Tests
             // "similar" predicate, with a document id as reference
             var similar = Predicates.similar("UXasdFwe42D", 10);
             // endgist
+            #pragma warning restore IDE0059
         }
 
         private readonly string RepositoryUrl = "https://apsnet-core-sdk.cdn.prismic.io/api";
@@ -71,11 +73,14 @@ namespace prismic.AspNetCore.Tests
                 .Query(DocumentId)
                 .Submit();
             var doc = response.Results[0];
+
+            #pragma warning disable IDE0059
             // startgist:1a6c8386fd678572d8b0:prismic-getNumber.cs
             // Number predicates
             var gt = Predicates.gt("test_document.number", 10);
             var lt = Predicates.lt("test_document.number", 20);
             var inRange = Predicates.inRange("test_document.number", 10, 20);
+            #pragma warning restore IDE0059
 
             // Accessing number fields
             decimal price = doc.GetNumber("test_document.number").Value;
@@ -98,7 +103,7 @@ namespace prismic.AspNetCore.Tests
                 try
                 {
                     fragments.StructuredText desc = doc.GetStructuredText("desc");
-                    fragments.Link link = doc.GetLink("linktodoc");
+                    fragments.ILink link = doc.GetLink("linktodoc");
                 }
                 catch (Exception)
                 {

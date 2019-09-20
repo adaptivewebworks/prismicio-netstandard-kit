@@ -8,7 +8,7 @@ namespace prismic
 {
     public interface IPredicate
     {
-        string q();
+        string Q();
     }
 
     public class Predicate : IPredicate
@@ -36,7 +36,7 @@ namespace prismic
             Value3 = value3;
         }
 
-        public string q()
+        public string Q()
         {
             string result = "[:d = " + Name + "(";
             if ("similar" == Name)

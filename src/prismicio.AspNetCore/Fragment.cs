@@ -8,14 +8,14 @@ using System.Net;
 
 namespace prismic
 {
-    public interface Fragment
+    public interface IFragment
     {
     }
 
     namespace fragments
     {
 
-        public class Text : Fragment
+        public class Text : IFragment
         {
             public string Value { get; }
             public Text(string value)
@@ -27,7 +27,7 @@ namespace prismic
             public static Text Parse(JToken json) => new Text((string)json);
         }
 
-        public class Number : Fragment
+        public class Number : IFragment
         {
             private static readonly CultureInfo _defaultCultureInfo = new CultureInfo("en-US");
             public decimal Value { get; }
@@ -47,7 +47,7 @@ namespace prismic
             }
         }
 
-        public class Image : Fragment
+        public class Image : IFragment
         {
             public class View
             {
@@ -56,11 +56,11 @@ namespace prismic
                 public int Height { get; }
                 public string Alt { get; }
                 public string Copyright { get; }
-                public Link LinkTo { get; }
+                public ILink LinkTo { get; }
 
                 public double Ratio => Width / Height;
 
-                public View(String url, int width, int height, string alt, string copyright, Link linkTo)
+                public View(String url, int width, int height, string alt, string copyright, ILink linkTo)
                 {
                     Url = url;
                     Width = width;
@@ -109,7 +109,7 @@ namespace prismic
                     int height = (int)json["dimensions"]["height"];
                     string alt = (string)json["alt"];
                     string copyright = (string)json["copyright"];
-                    Link linkTo = (Link)StructuredText.ParseLink((JObject)json["linkTo"]);
+                    ILink linkTo = (ILink)StructuredText.ParseLink((JObject)json["linkTo"]);
                     return new View(url, width, height, alt, copyright, linkTo);
                 }
 
@@ -152,12 +152,14 @@ namespace prismic
 
         }
 
-        public interface Link : Fragment
+
+
+        public interface ILink : IFragment
         {
             string GetUrl(DocumentLinkResolver resolver);
         }
 
-        public class WebLink : Link
+        public class WebLink : ILink
         {
             public string Url { get; }
             public string ContentType { get; }
@@ -178,7 +180,7 @@ namespace prismic
                 => new WebLink((string)json["url"], null, (string)json["target"]);
         }
 
-        public class FileLink : Link
+        public class FileLink : ILink
         {
             public string Url { get; }
             public string Kind { get; }
@@ -206,7 +208,7 @@ namespace prismic
 
         }
 
-        public class ImageLink : Link
+        public class ImageLink : ILink
         {
             public string Url { get; }
 
@@ -223,7 +225,7 @@ namespace prismic
 
         }
 
-        public class DocumentLink : WithFragments, Link
+        public class DocumentLink : WithFragments, ILink
         {
             public string Id { get; }
             public string Uid { get; }
@@ -233,7 +235,7 @@ namespace prismic
             public bool IsBroken { get; }
             public string Lang { get; }
 
-            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, Fragment> fragments, Boolean broken)
+            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, IFragment> fragments, Boolean broken)
                 : base(fragments)
             {
                 Id = id;
@@ -265,13 +267,13 @@ namespace prismic
                     tags = new HashSet<string>(json["tags"].Select(r => (string)r));
                 else
                     tags = new HashSet<string>();
-                IDictionary<string, Fragment> fragments = Document.ParseFragments(json["document"]);
+                IDictionary<string, IFragment> fragments = Document.ParseFragments(json["document"]);
                 return new DocumentLink(id, uid, type, tags, slug, lang, fragments, broken);
             }
 
         }
 
-        public class Date : Fragment
+        public class Date : IFragment
         {
             public DateTime Value { get; }
             public Date(DateTime value)
@@ -292,7 +294,7 @@ namespace prismic
             }
         }
 
-        public class Timestamp : Fragment
+        public class Timestamp : IFragment
         {
             public DateTime Value { get; }
             public Timestamp(DateTime value)
@@ -303,7 +305,7 @@ namespace prismic
             public static Timestamp Parse(JToken json) => new Timestamp(json.ToObject<DateTime>());
         }
 
-        public class Embed : Fragment
+        public class Embed : IFragment
         {
             public string Type { get; }
             public string Provider { get; }
@@ -354,7 +356,7 @@ namespace prismic
 
         }
 
-        public interface Slice : Fragment
+        public interface ISlice : IFragment
         {
             string SliceType { get; }
             string SliceLabel { get; }
@@ -362,13 +364,13 @@ namespace prismic
             string AsHtml(DocumentLinkResolver resolver);
         }
 
-        public class SimpleSlice : Slice
+        public class SimpleSlice : ISlice
         {
             public string SliceType { get; }
             public string SliceLabel { get; }
-            public Fragment Value { get; }
+            public IFragment Value { get; }
 
-            public SimpleSlice(string sliceType, string sliceLabel, Fragment value)
+            public SimpleSlice(string sliceType, string sliceLabel, IFragment value)
             {
                 SliceType = sliceType;
                 SliceLabel = sliceLabel;
@@ -386,7 +388,7 @@ namespace prismic
 
         }
 
-        public class CompositeSlice : Slice
+        public class CompositeSlice : ISlice
         {
             private readonly Group _repeat;
             private readonly GroupDoc _nonRepeat;
@@ -432,11 +434,11 @@ namespace prismic
             }
         }
 
-        public class SliceZone : Fragment
+        public class SliceZone : IFragment
         {
-            public IList<Slice> Slices { get; }
+            public IList<ISlice> Slices { get; }
 
-            public SliceZone(IList<Slice> slices)
+            public SliceZone(IList<ISlice> slices)
             {
                 Slices = slices;
             }
@@ -448,7 +450,7 @@ namespace prismic
 
             public static SliceZone Parse(JToken json)
             {
-                var slices = new List<Slice>();
+                var slices = new List<ISlice>();
                 foreach (JToken sliceJson in (JArray)json)
                 {
                     string sliceType = (string)sliceJson["slice_type"];
@@ -461,7 +463,7 @@ namespace prismic
                         //TODO more parsing refactor opportunities
                         string fragmentType = (string)fragJson["type"];
                         JToken fragmentValue = fragJson["value"];
-                        Fragment value = FragmentParser.Parse(fragmentType, fragmentValue);
+                        IFragment value = FragmentParser.Parse(fragmentType, fragmentValue);
                         slices.Add(new SimpleSlice(sliceType, label, value));
                     }
                     else
@@ -479,7 +481,7 @@ namespace prismic
             }
         }
 
-        public class Group : Fragment
+        public class Group : IFragment
         {
             public IList<GroupDoc> GroupDocs { get; }
 
@@ -504,12 +506,12 @@ namespace prismic
                 foreach (JToken groupJson in (JArray)json)
                 {
                     // each groupJson looks like this: { "somelink" : { "type" : "Link.document", { ... } }, "someimage" : { ... } }
-                    var fragmentMap = new Dictionary<string, Fragment>();
+                    var fragmentMap = new Dictionary<string, IFragment>();
                     foreach (KeyValuePair<string, JToken> field in (JObject)groupJson)
                     {
                         string fragmentType = (string)field.Value["type"];
                         JToken fragmentValue = field.Value["value"];
-                        Fragment fragment = FragmentParser.Parse(fragmentType, fragmentValue);
+                        IFragment fragment = FragmentParser.Parse(fragmentType, fragmentValue);
                         if (fragment != null) fragmentMap[field.Key] = fragment;
                     }
                     groupDocs.Add(new GroupDoc(fragmentMap));
@@ -519,7 +521,7 @@ namespace prismic
 
         }
 
-        public class Color : Fragment
+        public class Color : IFragment
         {
             public string Hex { get; }
 
@@ -544,7 +546,7 @@ namespace prismic
 
         }
 
-        public class GeoPoint : Fragment
+        public class GeoPoint : IFragment
         {
             private static readonly CultureInfo _defaultCultureInfo = new CultureInfo("en-US");
 
@@ -572,7 +574,7 @@ namespace prismic
             }
         }
 
-        public class Raw : Fragment
+        public class Raw : IFragment
         {
             public JToken Value { get; }
 
@@ -588,7 +590,7 @@ namespace prismic
 
         public static class FragmentParser
         {
-            public static Fragment Parse(string type, JToken json)
+            public static IFragment Parse(string type, JToken json)
             {
                 switch (type)
                 {

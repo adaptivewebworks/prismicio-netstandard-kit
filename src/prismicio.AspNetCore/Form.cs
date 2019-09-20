@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 
@@ -95,8 +94,8 @@ namespace prismic
                 this.form = form;
 
                 //TODO... seen this pattern in API Data refactor me...
-                data = new Dictionary<String, StringValues>();
-                foreach (KeyValuePair<String, Field> entry in form.Fields)
+                data = new Dictionary<string, StringValues>();
+                foreach (KeyValuePair<string, Field> entry in form.Fields)
                 {
                     if (entry.Value.DefaultValue != null)
                     {
@@ -359,7 +358,7 @@ namespace prismic
                 String result = "";
                 foreach (Predicate p in predicates)
                 {
-                    result += p.q();
+                    result += p.Q();
                 }
                 return this.Query("[" + result + "]");
             }
@@ -398,25 +397,7 @@ namespace prismic
             }
 
             public override string ToString() => DictionaryExtensions.GetQueryString(this.data);
-
-            public string toString() => this.ToString(); // Backwards compatability...
-
         }
 
     }
-
-    internal static class DictionaryExtensions
-    {
-        internal static string GetQueryString(IDictionary<string, StringValues> values)
-        {
-            var qb = new QueryBuilder();
-
-            foreach (var value in values)
-                qb.Add(value.Key, value.Value.ToString());
-
-            return qb.ToString();
-        }
-    }
-
 }
-
