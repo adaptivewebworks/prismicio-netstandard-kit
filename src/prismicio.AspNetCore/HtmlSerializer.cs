@@ -4,7 +4,7 @@ namespace prismic
 {
 	public abstract class HtmlSerializer
 	{
-		public abstract string Serialize(fragments.StructuredText.Element element, string content);
+		public abstract string Serialize(fragments.StructuredText.IElement element, string content);
 
         public static HtmlSerializer For(Func<object, string, string> f) 
 			=> new LambdaHtmlSerializer(f);
@@ -17,7 +17,7 @@ namespace prismic
 			_f = f;
 		}
 
-        public override string Serialize(fragments.StructuredText.Element element, string content)
+        public override string Serialize(fragments.StructuredText.IElement element, string content)
 			=> _f(element, content);
     }
 

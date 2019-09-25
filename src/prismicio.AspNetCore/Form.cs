@@ -359,7 +359,7 @@ namespace prismic
                 String result = "";
                 foreach (Predicate p in predicates)
                 {
-                    result += p.q();
+                    result += p.Q();
                 }
                 return this.Query("[" + result + "]");
             }
@@ -397,10 +397,7 @@ namespace prismic
                 }
             }
 
-            public override string ToString() => DictionaryExtensions.GetQueryString(this.data);
-
-            public string toString() => this.ToString(); // Backwards compatability...
-
+            public override string ToString() => DictionaryExtensions.GetQueryString(data);
         }
 
     }

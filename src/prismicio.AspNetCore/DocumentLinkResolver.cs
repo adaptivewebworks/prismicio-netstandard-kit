@@ -8,7 +8,7 @@ namespace prismic
 
         public string Resolve(Document doc) => Resolve(doc.AsDocumentLink());
 
-        public string GetTitle(fragments.DocumentLink link) => null;
+        public virtual string GetTitle(fragments.DocumentLink link) => null;
 
         public static DocumentLinkResolver For(Func<fragments.DocumentLink, string> resolver) => new LambdaDocumentLinkResolver(resolver);
     }

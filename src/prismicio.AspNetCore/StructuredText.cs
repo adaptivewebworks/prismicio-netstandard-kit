@@ -8,11 +8,11 @@ namespace prismic
 {
     namespace fragments
     {
-        public class StructuredText : Fragment
+        public class StructuredText : IFragment
         {
-            public interface Element { }
+            public interface IElement { }
 
-            public abstract class Block : Element
+            public abstract class Block : IElement
             {
                 public string Label { get; }
                 public Block(string label)
@@ -89,7 +89,7 @@ namespace prismic
                 }
             }
 
-            public abstract class Span : Element
+            public abstract class Span : IElement
             {
                 public int Start { get; }
                 public int End { get; }
@@ -112,9 +112,9 @@ namespace prismic
 
             public class Hyperlink : Span
             {
-                public Link Link { get; }
+                public ILink Link { get; }
 
-                public Hyperlink(int start, int end, Link link) : base(start, end)
+                public Hyperlink(int start, int end, ILink link) : base(start, end)
                 {
                     Link = link;
                 }
@@ -167,22 +167,26 @@ namespace prismic
                 var blockGroups = new List<BlockGroup>();
                 foreach (Block block in blocks)
                 {
-                    BlockGroup lastOne = blockGroups.Count == 0 ? null : blockGroups[blockGroups.Count - 1];
-                    if (lastOne != null && "ul" == lastOne.Tag && block is ListItem && !((ListItem)block).IsOrdered)
+                    BlockGroup lastOne = blockGroups.LastOrDefault();
+                    var listItem = block as ListItem;
+                    var isListItem = listItem != null;
+                    var isOrdererdListItem = listItem?.IsOrdered ?? false;
+
+                    if (lastOne != null && "ul" == lastOne.Tag && isListItem && !isOrdererdListItem)
                     {
                         lastOne.Blocks.Add(block);
                     }
-                    else if (lastOne != null && "ol" == lastOne.Tag && block is ListItem && ((ListItem)block).IsOrdered)
+                    else if (lastOne != null && "ol" == lastOne.Tag && isListItem && isOrdererdListItem)
                     {
                         lastOne.Blocks.Add(block);
                     }
-                    else if (block is ListItem && !((ListItem)block).IsOrdered)
+                    else if (isListItem && !isOrdererdListItem)
                     {
                         BlockGroup newBlockGroup = new BlockGroup("ul", new List<Block>());
                         newBlockGroup.Blocks.Add(block);
                         blockGroups.Add(newBlockGroup);
                     }
-                    else if (block is ListItem && ((ListItem)block).IsOrdered)
+                    else if (isListItem && isOrdererdListItem)
                     {
                         BlockGroup newBlockGroup = new BlockGroup("ol", new List<Block>());
                         newBlockGroup.Blocks.Add(block);
@@ -203,7 +207,7 @@ namespace prismic
                         html += ("<" + blockGroup.Tag + ">");
                         foreach (Block block in blockGroup.Blocks)
                         {
-                            html += (asHtml(block, linkResolver, htmlSerializer));
+                            html += (AsHtml(block, linkResolver, htmlSerializer));
                         }
                         html += ("</" + blockGroup.Tag + ">");
                     }
@@ -211,14 +215,14 @@ namespace prismic
                     {
                         foreach (Block block in blockGroup.Blocks)
                         {
-                            html += (asHtml(block, linkResolver, htmlSerializer));
+                            html += (AsHtml(block, linkResolver, htmlSerializer));
                         }
                     }
                 }
                 return html;
             }
 
-            public string asHtml(Block block, DocumentLinkResolver linkResolver, HtmlSerializer htmlSerializer)
+            public string AsHtml(Block block, DocumentLinkResolver linkResolver, HtmlSerializer htmlSerializer)
             {
                 string content = "";
                 if (block is Heading)
@@ -295,9 +299,9 @@ namespace prismic
                 {
                     return "<em>" + content + "</em>";
                 }
-                if (span is LabelSpan)
+                if (span is LabelSpan labelSpan)
                 {
-                    return "<span class=\"" + ((LabelSpan)span).Label + "\">" + content + "</span>";
+                    return "<span class=\"" + labelSpan.Label + "\">" + content + "</span>";
                 }
                 if (span is Hyperlink hyperlink)
                 {
@@ -419,12 +423,12 @@ namespace prismic
 
             // --
 
-            public static Link ParseLink(JToken json)
+            public static ILink ParseLink(JToken json)
             {
                 if (json == null)
                     return null;
-                string linkType = (string)json["type"];
-                JObject value = (JObject)json["value"];
+                var linkType = (string)json["type"];
+                var value = (JObject)json["value"];
                 switch (linkType)
                 {
                     case "Link.web":
@@ -455,7 +459,7 @@ namespace prismic
                         case "em":
                             return new Em(start, end);
                         case "hyperlink":
-                            Link link = ParseLink(data);
+                            ILink link = ParseLink(data);
                             if (link != null)
                             {
                                 return new Hyperlink(start, end, link);
