@@ -10,17 +10,18 @@ namespace prismic.AspNetCore.Tests
         [Fact]
         public void AllPredicatesTest()
         {
+            #pragma warning disable IDE0059
             // startgist:e65ee8392a8b6c8aedc4:prismic-allPredicates.cs
             // "at" predicate: equality of a fragment to a value.
-            var at = Predicates.at("document.type", "article");
+            var at = Predicates.At("document.type", "article");
             // "any" predicate: equality of a fragment to a value.
-            var any = Predicates.any("document.type", new string[] { "article", "blog-post" });
+            var any = Predicates.Any("document.type", new string[] { "article", "blog-post" });
 
             // "fulltext" predicate: fulltext search in a fragment.
-            var fulltext = Predicates.fulltext("my.article.body", "sausage");
+            var fulltext = Predicates.Fulltext("my.article.body", "sausage");
 
             // "similar" predicate, with a document id as reference
-            var similar = Predicates.similar("UXasdFwe42D", 10);
+            var similar = Predicates.Similar("UXasdFwe42D", 10);
             // endgist
         }
 
@@ -71,11 +72,12 @@ namespace prismic.AspNetCore.Tests
                 .Query(DocumentId)
                 .Submit();
             var doc = response.Results[0];
+            #pragma warning disable 
             // startgist:1a6c8386fd678572d8b0:prismic-getNumber.cs
             // Number predicates
-            var gt = Predicates.gt("test_document.number", 10);
-            var lt = Predicates.lt("test_document.number", 20);
-            var inRange = Predicates.inRange("test_document.number", 10, 20);
+            var gt = Predicates.Gt("test_document.number", 10);
+            var lt = Predicates.Lt("test_document.number", 20);
+            var inRange = Predicates.InRange("test_document.number", 10, 20);
 
             // Accessing number fields
             decimal price = doc.GetNumber("test_document.number").Value;
@@ -98,7 +100,7 @@ namespace prismic.AspNetCore.Tests
                 try
                 {
                     fragments.StructuredText desc = doc.GetStructuredText("desc");
-                    fragments.Link link = doc.GetLink("linktodoc");
+                    fragments.ILink link = doc.GetLink("linktodoc");
                 }
                 catch (Exception)
                 {
