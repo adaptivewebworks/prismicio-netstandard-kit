@@ -56,7 +56,7 @@ namespace prismic
          * Retrieve multiple documents from their IDS
          */
         public Form.SearchForm GetByIDs(IEnumerable<string> ids, string reference = null, string lang = null) 
-            => Query(Predicates.@in("document.id", ids))
+            => Query(Predicates.In("document.id", ids))
                 .Ref(reference)
                 .Lang(lang);
 
@@ -88,7 +88,7 @@ namespace prismic
         {
             SetReferenceOrMaster(reference);
 
-            return QueryFirst(Predicates.at("document.id", documentId), reference, lang);
+            return QueryFirst(Predicates.At("document.id", documentId), reference, lang);
         }
 
         /**
@@ -100,7 +100,7 @@ namespace prismic
         {
             SetReferenceOrMaster(reference);
 
-            return QueryFirst(Predicates.at("my." + documentType + ".uid", documentUid), reference, lang);
+            return QueryFirst(Predicates.At("my." + documentType + ".uid", documentUid), reference, lang);
         }
 
         public Task<Document> GetBookmark(string bookmark, string reference = null)
@@ -127,7 +127,7 @@ namespace prismic
                 return (defaultUrl);
             }
             var resp = await Form("everything")
-                .Query(Predicates.at("document.id", mainDocumentId.ToString()))
+                .Query(Predicates.At("document.id", mainDocumentId.ToString()))
                 .Ref(token)
                 .Lang()
                 .Submit();

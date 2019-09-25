@@ -66,6 +66,7 @@ namespace prismic
                             throw new Error(Error.ErrorCode.AUTHORIZATION_NEEDED, errorText);
                         }
                     default:
+                        logger.LogError("Prismic API returned an unexpected {statusCode}", response.StatusCode);
                         throw new Error(Error.ErrorCode.UNEXPECTED, body);
                 }
             }

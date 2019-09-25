@@ -21,7 +21,7 @@ namespace prismic
         public string Lang { get; }
         public IList<AlternateLanguage> AlternateLanguages { get; }
 
-        public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, string lang, IList<AlternateLanguage> alternateLanguages, IDictionary<string, Fragment> fragments, DateTime? firstPublicationDate, DateTime? lastPublicationDate)
+        public Document(string id, string uid, string type, string href, ISet<string> tags, IList<string> slugs, string lang, IList<AlternateLanguage> alternateLanguages, IDictionary<string, IFragment> fragments, DateTime? firstPublicationDate, DateTime? lastPublicationDate)
             : base(fragments)
         {
             Id = id;
@@ -38,9 +38,9 @@ namespace prismic
 
         public fragments.DocumentLink AsDocumentLink() => new fragments.DocumentLink(Id, Uid, Type, Tags, Slugs[0], Lang, Fragments, false);
 
-        public static IDictionary<string, Fragment> ParseFragments(JToken json)
+        public static IDictionary<string, IFragment> ParseFragments(JToken json)
         {
-            IDictionary<string, Fragment> fragments = new Dictionary<string, Fragment>();
+            IDictionary<string, IFragment> fragments = new Dictionary<string, IFragment>();
 
             if (json == null)
             {
@@ -72,10 +72,10 @@ namespace prismic
             return fragments;
         }
 
-        private static Fragment MapFragment(JToken field)
+        private static IFragment MapFragment(JToken field)
             => prismic.fragments.FragmentParser.Parse((string)field["type"], field["value"]);
 
-        private static void AddFragment(IDictionary<string, Fragment> fragments, string name, Fragment fragment)
+        private static void AddFragment(IDictionary<string, IFragment> fragments, string name, IFragment fragment)
         {
             if (fragment == null)
                 return;
