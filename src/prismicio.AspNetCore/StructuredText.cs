@@ -168,8 +168,8 @@ namespace prismic
                 foreach (Block block in blocks)
                 {
                     BlockGroup lastOne = blockGroups.LastOrDefault();
-                    var listItem = (ListItem)block;
-                    var isListItem = block != null;
+                    var listItem = block as ListItem;
+                    var isListItem = listItem != null;
                     var isOrdererdListItem = listItem?.IsOrdered ?? false;
 
                     if (lastOne != null && "ul" == lastOne.Tag && isListItem && !isOrdererdListItem)
