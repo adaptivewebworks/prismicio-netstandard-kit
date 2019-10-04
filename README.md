@@ -6,7 +6,7 @@
 
 This kit can be installed using NuGet [prismic package](https://www.nuget.org/packages/).
 To install prismic from the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console), run the following command :
-PM> Install-Package prismicio
+PM> Install-Package prismicio.netstandard
 
 *(Feel free to detail the proper steps for beginners by [submitting a pull request](https://developers.prismic.io/documentation/UszOeAEAANUlwFpp/contribute-to-the-official-kits).)*
 
@@ -23,6 +23,10 @@ Also on our [prismic.io developer's portal](https://developers.prismic.io/), on 
 
 Until November 2014, the dotnet kit was based on F# code. This introduced syntax that can be confusing or unnecessarily complex for C# developers.
 F# users can stick with the older kit, but C# are strongly encouraged to switch to this kit. See [Migration.md](https://github.com/prismicio/csharp-kit/blob/master/Migration.md) document for more informations.
+
+### Backwards Compatability
+The new kit follows a more idiomatic C# coding style, when migrating a large code base to the new library, this gist might get your project building a little quicker.
+https://gist.github.com/benembery/f83800262f9713d01324273d2a7f1a12
 
 ### Changelog
 
