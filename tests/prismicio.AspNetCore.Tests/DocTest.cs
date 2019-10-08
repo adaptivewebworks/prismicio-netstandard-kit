@@ -25,14 +25,12 @@ namespace prismic.AspNetCore.Tests
             // endgist
         }
 
-        private readonly string RepositoryUrl = "https://apsnet-core-sdk.cdn.prismic.io/api";
-
         private readonly string DocumentId = @"[[:d = at(document.id, ""XPZFuxAAAIGaEtfj"")]]";
 
         [Fact]
         public async Task GetTextTest()
         {
-            Api api = await TestHelper.GetApi(RepositoryUrl);
+            Api api = await TestHelper.GetApi(TestHelper.Endpoint);
             var response = await api.Form("everything")
                 .Ref(api.Master)
                 .Query(DocumentId)
@@ -66,7 +64,7 @@ namespace prismic.AspNetCore.Tests
         [Fact]
         public async Task GetNumberTest()
         {
-            Api api = await TestHelper.GetApi(RepositoryUrl);
+            Api api = await TestHelper.GetApi(TestHelper.Endpoint);
             var response = await api.Form("everything")
                 .Ref(api.Master)
                 .Query(DocumentId)

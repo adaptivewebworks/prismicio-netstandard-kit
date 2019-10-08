@@ -25,19 +25,18 @@ namespace prismic
         public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IOptions<PrismicSettings> settings) : this(prismicHttpClient, logger, cache)
         {
             _settings = settings.Value;
-            
-            if(_settings == null)
-                throw new ArgumentNullException(nameof(settings), "Settings must not be null");
-
-            if(string.IsNullOrWhiteSpace(_settings.Endpoint))
-                throw new ArgumentException(nameof(_settings.Endpoint), "Invalid endpoint uri");
         }
 
         /**
          * Entry point to get an {@link Api} object from settings
          */
         public Task<Api> GetApi()
-            => GetApi(_settings.Endpoint, _settings.AccessToken);
+        {
+            if (_settings == null)
+                throw new ArgumentNullException(nameof(_settings), "Settings must not be null");
+
+            return GetApi(_settings.Endpoint, _settings.AccessToken);
+        }
 
         /**
 		* Entry point to get an {@link Api} object.
@@ -46,8 +45,8 @@ namespace prismic
 		* @param url the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
 		* @return the usable API object
 		*/
-        public Task<Api> GetApi(string endpoint) 
-			=> GetApi(endpoint, null);
+        public Task<Api> GetApi(string endpoint)
+            => GetApi(endpoint, null);
 
         /**
 		* Entry point to get an {@link Api} object.
@@ -58,6 +57,9 @@ namespace prismic
 		*/
         public async Task<Api> GetApi(string endpoint, string accessToken)
         {
+            if (string.IsNullOrWhiteSpace(endpoint))
+                throw new ArgumentException("Invalid endpoint uri", nameof(endpoint));
+
             var url = endpoint;
 
             if (!string.IsNullOrWhiteSpace(accessToken))
@@ -73,8 +75,6 @@ namespace prismic
             ApiData apiData = ApiData.Parse(json);
             return new Api(apiData, _cache, _logger, _prismicHttpClient);
         }
-
-        
     }
 }
 
