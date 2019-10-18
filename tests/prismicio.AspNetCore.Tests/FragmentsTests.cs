@@ -1,6 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -88,6 +85,32 @@ namespace prismic.AspNetCore.Tests
             var expect = String.Format(@"<img alt=""some alt text"" src=""{0}"" width=""100"" height=""100"" />", someurl);
 
             Assert.Equal(expect, html);
+        }
+
+        [Fact]
+        public async Task ShouldHaveImageView()
+        {
+            var url = "https://test-public.prismic.io/api";
+			var api = await TestHelper.GetApi(url);
+            var document = await api.GetByID("Uyr9sgEAAGVHNoFZ");
+            var maybeImg = document.GetImage("article.illustration");
+            
+            Assert.NotNull(maybeImg);
+            Assert.True(maybeImg.HasView("icon"));
+        }
+
+        [Fact]
+        public async Task ShouldTryGetmageView()
+        {
+            var url = "https://test-public.prismic.io/api";
+			var api = await TestHelper.GetApi(url);
+            var document = await api.GetByID("Uyr9sgEAAGVHNoFZ");
+            var maybeImg = document.GetImage("article.illustration");
+            
+            Assert.NotNull(maybeImg);
+            var tryResult = maybeImg.TryGetView("icon", out var view);
+            Assert.True(tryResult);
+            Assert.NotNull(view);
         }
 
         [Fact]

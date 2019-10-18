@@ -95,7 +95,7 @@ namespace prismic
         public Image.View GetImageView(string field, string view)
         {
             var image = GetImage(field);
-            if (image != null)
+            if (image != null && image.HasView(view))
                 return image.GetView(view);
             return null;
         }
