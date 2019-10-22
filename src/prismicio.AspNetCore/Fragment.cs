@@ -126,13 +126,33 @@ namespace prismic
 
             public Image(View main) : this(main, new Dictionary<string, View>()) { }
 
+
+            /// <summary>
+            /// Get a responsive view of an image
+            /// </summary>
+            /// <exception>Throws key not found exception if view does not exist. Use HasView to check</exception>
+            /// <param name="view"></param>
             public View GetView(string view)
+                => ("main" == view)
+                    ? main
+                    : views[view];
+
+            public bool HasView(string view)
+                => views.ContainsKey(view);
+
+            public bool TryGetView(string viewName, out View view)
             {
-                if ("main" == view)
+                if ("main" == viewName)
                 {
-                    return main;
+                    view = main;
+                    return true;
                 }
-                return views[view];
+
+                view = HasView(viewName)
+                    ? views[viewName]
+                    : null;
+
+                return view != null;
             }
 
             public string AsHtml(DocumentLinkResolver linkResolver) => GetView("main").AsHtml(linkResolver);

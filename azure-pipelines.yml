@@ -9,6 +9,11 @@ trigger:
 
 pr: none
 
+pr:
+  branches:
+    exclude:
+    - '*'
+
 pool:
   vmImage: 'ubuntu-latest'
 

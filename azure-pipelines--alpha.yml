@@ -8,6 +8,12 @@ name: alpha-$(date:yyyyMMdd)$(rev:-r)
 trigger:
 - dev
 
+
+pr:
+  branches:
+    exclude:
+    - '*'
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -51,3 +57,4 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/*.nupkg;!$(Build.ArtifactStagingDirectory)/packages/*.symbols.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'NuGet.org'
+    allowPackageConflicts: true
