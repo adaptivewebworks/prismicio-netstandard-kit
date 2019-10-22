@@ -8,11 +8,7 @@ name: alpha-$(date:yyyyMMdd)$(rev:-r)
 trigger:
 - dev
 
-
-pr:
-  branches:
-    exclude:
-    - '*'
+pr: none
 
 pool:
   vmImage: 'ubuntu-latest'
