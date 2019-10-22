@@ -27,4 +27,4 @@ steps:
   displayName: 'Test for $(buildConfiguration)'
   inputs:
     command: test
-    arguments: -c $(buildConfiguration) --no-build
+    arguments: -c $(buildConfiguration)
