@@ -142,7 +142,7 @@ namespace prismic
                 return Blocks;
             }
 
-            public Heading GetTitle() => FirstOfType<Heading>(); 
+            public Heading GetTitle() => FirstOfType<Heading>();
 
             public Paragraph GetFirstParagraph() => FirstOfType<Paragraph>();
 
@@ -245,13 +245,14 @@ namespace prismic
 
                 if (htmlSerializer != null)
                 {
-                    String customHtml = htmlSerializer.Serialize(block, content);
+                    string customHtml = htmlSerializer.Serialize(block, content);
                     if (customHtml != null)
                     {
                         return customHtml;
                     }
                 }
-                String classCode = block.Label == null ? "" : (" class=\"" + block.Label + "\"");
+
+                string classCode = block.Label == null ? "" : (" class=\"" + block.Label + "\"");
                 if (block is Heading)
                 {
                     Heading heading = (Heading)block;
@@ -287,10 +288,9 @@ namespace prismic
                 {
                     string customHtml = htmlSerializer.Serialize(span, content);
                     if (customHtml != null)
-                    {
                         return customHtml;
-                    }
                 }
+
                 if (span is Strong)
                 {
                     return "<strong>" + content + "</strong>";
@@ -320,7 +320,7 @@ namespace prismic
                     else if (hyperlink.Link is DocumentLink documentLink)
                     {
                         string url = linkResolver.Resolve(documentLink);
-                        HtmlExtensions.Link(url, content, title: linkResolver.GetTitle(documentLink));
+                        return HtmlExtensions.Link(url, content, title: linkResolver.GetTitle(documentLink));
                     }
                 }
                 return "<span>" + content + "</span>";
