@@ -1,5 +1,4 @@
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace prismic
 {
@@ -10,7 +9,7 @@ namespace prismic
         public string Type { get; }
         public string Lang { get; }
 
-        public AlternateLanguage(String id, String uid, String type, String lang)
+        public AlternateLanguage(string id, string uid, string type, string lang)
         {
             Id = id;
             UID = uid;

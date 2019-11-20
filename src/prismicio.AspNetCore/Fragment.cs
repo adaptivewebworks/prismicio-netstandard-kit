@@ -60,7 +60,7 @@ namespace prismic
 
                 public double Ratio => Width / Height;
 
-                public View(String url, int width, int height, string alt, string copyright, ILink linkTo)
+                public View(string url, int width, int height, string alt, string copyright, ILink linkTo)
                 {
                     Url = url;
                     Width = width;
@@ -137,22 +137,19 @@ namespace prismic
                     ? main
                     : views[view];
 
-            public bool HasView(string view)
-                => views.ContainsKey(view);
+            public bool HasView(string viewName)
+                => viewName == "main" || views.ContainsKey(viewName);
 
             public bool TryGetView(string viewName, out View view)
             {
-                if ("main" == viewName)
+                if (!HasView(viewName))
                 {
-                    view = main;
-                    return true;
+                    view = null;
+                    return false;
                 }
 
-                view = HasView(viewName)
-                    ? views[viewName]
-                    : null;
-
-                return view != null;
+                view = GetView(viewName);
+                return true;
             }
 
             public string AsHtml(DocumentLinkResolver linkResolver) => GetView("main").AsHtml(linkResolver);

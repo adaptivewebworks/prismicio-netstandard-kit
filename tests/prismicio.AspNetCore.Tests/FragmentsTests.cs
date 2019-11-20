@@ -81,7 +81,7 @@ namespace prismic.AspNetCore.Tests
 
             var html = maybeImgView.AsHtml(resolver);
 
-            var someurl = "https://test-public.cdn.prismic.io/test-public/9f5f4e8a5d95c7259108e9cfdde953b5e60dcbb6.jpg";
+            var someurl = "https://images.prismic.io/test-public/9f5f4e8a5d95c7259108e9cfdde953b5e60dcbb6.jpg?auto=compress,format";
             var expect = String.Format(@"<img alt=""some alt text"" src=""{0}"" width=""100"" height=""100"" />", someurl);
 
             Assert.Equal(expect, html);
