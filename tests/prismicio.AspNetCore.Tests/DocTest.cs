@@ -5,12 +5,14 @@ using Xunit;
 
 namespace prismic.AspNetCore.Tests
 {
+
+
     public class DocTest
     {
         [Fact]
         public void AllPredicatesTest()
         {
-            #pragma warning disable IDE0059
+#pragma warning disable IDE0059
             // startgist:e65ee8392a8b6c8aedc4:prismic-allPredicates.cs
             // "at" predicate: equality of a fragment to a value.
             var at = Predicates.At("document.type", "article");
@@ -70,7 +72,7 @@ namespace prismic.AspNetCore.Tests
                 .Query(DocumentId)
                 .Submit();
             var doc = response.Results[0];
-            #pragma warning disable 
+#pragma warning disable
             // startgist:1a6c8386fd678572d8b0:prismic-getNumber.cs
             // Number predicates
             var gt = Predicates.Gt("test_document.number", 10);

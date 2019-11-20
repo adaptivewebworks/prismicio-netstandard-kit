@@ -41,3 +41,4 @@ src/nuget/packages/
 src/nuget/packaging/
 
 node_modules/
+coverage.json
