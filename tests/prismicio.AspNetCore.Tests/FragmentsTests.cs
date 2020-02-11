@@ -70,6 +70,14 @@ namespace prismic.AspNetCore.Tests
         }
 
         [Fact]
+        public void ShouldParseBoolean()
+        {
+            var document = Fixtures.GetDocument("fragments.json");
+            var boolFragment = document.GetBoolean("article.bool");
+            Assert.True(boolFragment.Value);
+        }
+
+        [Fact]
         public async Task ShouldAccessImage()
         {
             var url = "https://test-public.prismic.io/api";

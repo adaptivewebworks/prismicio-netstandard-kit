@@ -41,7 +41,7 @@ namespace prismic.AspNetCore.Tests
             // startgist:15c8532139ffcb369b95:prismic-getText.cs
             var author = doc.GetText("test_document.text");
             // endgist
-            Assert.Equal("Test Document Text", author); // gisthide
+            Assert.Equal("Test Document", author); // gisthide
         }
 
         [Fact]

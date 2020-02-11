@@ -77,6 +77,10 @@ namespace prismic
             {
                 return number1.Value.ToString();
             }
+            if (frag is BooleanFragment boolean)
+            {
+                return boolean.Value.ToString();
+            }
             return null;
         }
 
@@ -197,6 +201,12 @@ namespace prismic
                 default:
                     return string.Empty;
             }
+        }
+
+        public BooleanFragment GetBoolean(string field)
+        {
+            IFragment fragment = Get(field);
+            return (BooleanFragment)fragment;
         }
 
         public string AsHtml(DocumentLinkResolver linkResolver) => AsHtml(linkResolver, null);

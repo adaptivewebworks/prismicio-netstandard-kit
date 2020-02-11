@@ -14,7 +14,6 @@ namespace prismic
 
     namespace fragments
     {
-
         public class Text : IFragment
         {
             public string Value { get; }
@@ -250,7 +249,7 @@ namespace prismic
             public bool IsBroken { get; }
             public string Lang { get; }
 
-            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, IFragment> fragments, Boolean broken)
+            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, IFragment> fragments, bool broken)
                 : base(fragments)
             {
                 Id = id;
@@ -269,7 +268,7 @@ namespace prismic
             public static DocumentLink Parse(JToken json)
             {
                 JObject document = (JObject)json["document"];
-                Boolean broken = (Boolean)json["isBroken"];
+                bool broken = (bool)json["isBroken"];
                 string id = (string)document["id"];
                 string type = (string)document["type"];
                 string slug = (string)document["slug"];
@@ -641,6 +640,8 @@ namespace prismic
                         return Group.Parse(json);
                     case "SliceZone":
                         return SliceZone.Parse(json);
+                    case "Boolean":
+                        return BooleanFragment.Parse(json);
                     default:
                         return json != null ? Raw.Parse(json) : null;
                 }
