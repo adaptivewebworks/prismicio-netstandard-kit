@@ -12,12 +12,12 @@ namespace prismic.AspNetCore.Tests
         {
             var collection = new ServiceCollection()
                 .AddLogging();
-        
+
             collection.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()));
             collection.AddPrismic();
-             var serviceProvider = collection.BuildServiceProvider();
-             
-             var cache = serviceProvider.GetService<ICache>();
+            var serviceProvider = collection.BuildServiceProvider();
+
+            var cache = serviceProvider.GetService<ICache>();
             Assert.Equal(typeof(InMemoryCache), cache.GetType());
 
             var client = serviceProvider.GetService<PrismicHttpClient>();
@@ -33,17 +33,35 @@ namespace prismic.AspNetCore.Tests
         public void AddPrismic_with_custom_implementation_does_not_override_implementation()
         {
             var collection = new ServiceCollection();
-        
+
             collection.AddSingleton<ICache, TestCache>();
             collection.AddPrismic();
             var serviceProvider = collection.BuildServiceProvider();
-            
+
             var cache = serviceProvider.GetService<ICache>();
             Assert.NotNull(cache);
             Assert.Equal(typeof(TestCache), cache.GetType());
 
             cache = serviceProvider.GetService<TestCache>();
             Assert.Null(cache);
+        }
+
+        [Fact]
+        public void AddPrismic_with_HttpContextAwareness()
+        {
+            var collection = new ServiceCollection();
+
+            collection.AddSingleton<ICache, TestCache>();
+            collection.AddPrismicHttpContextAware();
+            var serviceProvider = collection.BuildServiceProvider();
+
+            var cache = serviceProvider.GetService<ICache>();
+            Assert.NotNull(cache);
+            Assert.Equal(typeof(TestCache), cache.GetType());
+
+            var accessor = serviceProvider.GetService<IPrismicApiAccessor>();
+            Assert.NotNull(accessor);
+            Assert.Equal(typeof(HttpContextAwarePrismicApiAccessor), accessor.GetType());
         }
 
         private class TestCache : ICache

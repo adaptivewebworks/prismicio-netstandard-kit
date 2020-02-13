@@ -29,8 +29,8 @@ namespace prismic
             public static Field Parse(JToken json)
             {
                 string type = (string)json["type"];
-                string defaultValue = (json["default"] != null ? (string)json["default"] : null);
-                bool multiple = (json["multiple"] != null ? (Boolean)json["multiple"] : false);
+                string defaultValue = json["default"] != null ? (string)json["default"] : null;
+                bool multiple = json["multiple"] != null ? (bool)json["multiple"] : false;
                 return new Field(type, multiple, defaultValue);
             }
 

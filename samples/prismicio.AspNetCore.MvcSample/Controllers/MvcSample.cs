@@ -16,8 +16,12 @@ namespace prismicio.AspNetCore.MvcSample.Controllers
         public async Task<IActionResult> Index()
         {
             var api = await _prismic.GetApi();
+            
+            var docType = "test_document";
 
-            return View(api.Master);
+            var document = await api.GetByUID(docType, "test-document");
+
+            return View(model: document.GetText($"{docType}.text"));
         }
 
     }

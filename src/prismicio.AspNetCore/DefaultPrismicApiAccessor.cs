@@ -10,10 +10,10 @@ namespace prismic
     public class DefaultPrismicApiAccessor : IPrismicApiAccessor
     {
 
-        private readonly PrismicHttpClient _prismicHttpClient;
-        private readonly ILogger<Api> _logger;
-        private readonly ICache _cache;
-        private readonly PrismicSettings _settings;
+        protected readonly PrismicHttpClient _prismicHttpClient;
+        protected readonly ILogger<Api> _logger;
+        protected readonly ICache _cache;
+        protected readonly PrismicSettings _settings;
 
         public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache)
         {
@@ -72,9 +72,13 @@ namespace prismic
                 json = await _prismicHttpClient.Fetch(url, _logger, _cache);
                 _cache.Set(url, 5000L, json);
             }
+
             ApiData apiData = ApiData.Parse(json);
-            return new Api(apiData, _cache, _logger, _prismicHttpClient);
+            return GetApi(apiData);
         }
+
+        protected virtual Api GetApi(ApiData apiData)
+            => new Api(apiData, _cache, _logger, _prismicHttpClient);
     }
 }
 
