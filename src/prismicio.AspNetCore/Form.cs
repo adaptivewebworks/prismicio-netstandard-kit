@@ -393,7 +393,7 @@ namespace prismic
                 }
                 else
                 {
-                    throw new Error(Error.ErrorCode.UNEXPECTED, "Form type not supported");
+                    throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, "Form type not supported");
                 }
             }
 

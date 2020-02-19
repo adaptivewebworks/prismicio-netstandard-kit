@@ -38,11 +38,11 @@ namespace prismic
             if (!Fragments.TryGetValue(field, out IFragment single))
                 return null;
 
-            IList<IFragment> multi = GetAll(field);
-            if (multi.Count > 0)
-            {
-                return multi[0];
-            }
+            // IList<IFragment> multi = GetAll(field);
+            // if (multi.Count > 0)
+            // {
+            //     return multi[0];
+            // }
             return single;
         }
 
@@ -263,7 +263,7 @@ namespace prismic
 
         public Raw GetRaw(string field)
         {
-            IFragment frag = Get(field);
+            var frag = Get(field);
             return (Raw)frag;
         }
     }

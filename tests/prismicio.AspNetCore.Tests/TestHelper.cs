@@ -18,7 +18,7 @@ namespace prismic.AspNetCore.Tests
             var logger = factory.CreateLogger<Api>();
 
             var cache = CreateInMemoryCache();
-            var httpClient = new PrismicHttpClient(new HttpClient());
+            var httpClient = new PrismicHttpClient(new HttpClient(), cache, factory.CreateLogger<PrismicHttpClient>());
             var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
 
             if (settings == null)
@@ -38,7 +38,7 @@ namespace prismic.AspNetCore.Tests
                 );
         }
 
-        private static IServiceCollection GetServiceCollection()
+        public static IServiceCollection GetServiceCollection()
             => new ServiceCollection().AddLogging();
 
         public static Task<Api> GetApi(string url)

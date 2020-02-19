@@ -5,8 +5,20 @@ using Xunit;
 
 namespace prismic.AspNetCore.Tests
 {
-    public class FragmentsTests
+
+    public class FragmentTests
     {
+        [Fact]
+        public void GetAll_filters_fragments_correctly()
+        {
+            var document = Fixtures.GetDocument("fragments.json");
+            var group = document.GetGroup("article.group");
+
+            // var thing = group.GetAll("group_text");
+
+            // Assert.Equal(1, articleFragments.Count);
+        }
+    
         [Fact]
         public async Task ShouldAccessGroupField()
         {

@@ -69,15 +69,10 @@ namespace prismic
             if (!string.IsNullOrWhiteSpace(accessToken))
                 url += $"?access_token={WebUtility.UrlEncode(accessToken)}";
 
-            JToken json = _cache.Get(url);
-
-            if (json == null)
-            {
-                json = await _prismicHttpClient.Fetch(url, _logger, _cache);
-                _cache.Set(url, 5000L, json);
-            }
+            JToken json = await _prismicHttpClient.Fetch(url);
 
             ApiData apiData = ApiData.Parse(json);
+            
             return GetApi(apiData);
         }
 

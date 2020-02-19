@@ -115,7 +115,7 @@ namespace prismic
         */
         public async Task<string> PreviewSession(string token, DocumentLinkResolver linkResolver, string defaultUrl)
         {
-            var tokenJson = await _prismicHttpClient.Fetch(token, logger, cache);
+            var tokenJson = await _prismicHttpClient.Fetch(token);
             var mainDocumentId = tokenJson["mainDocument"];
             
             if (mainDocumentId == null)
@@ -139,7 +139,7 @@ namespace prismic
 
         internal async Task<Response> Fetch(string url)
         {
-            var json = await _prismicHttpClient.Fetch(url, logger, cache);
+            var json = await _prismicHttpClient.Fetch(url);
             var response = Response.Parse(json);
 
             return response;
