@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 
@@ -57,18 +56,12 @@ namespace prismic
 
         public static Form Parse(JObject json)
         {
-            String name = (string)json["name"];
-            String method = (string)json["method"];
-            String rel = (string)json["rel"];
-            String enctype = (string)json["enctype"];
-            String action = (string)json["action"];
-
-            //TODO... seen this pattern in API Data refactor me...
-            var fields = new Dictionary<string, Field>();
-            foreach (KeyValuePair<string, JToken> t in ((JObject)json["fields"]))
-            {
-                fields[t.Key] = Field.Parse((JObject)t.Value);
-            }
+            var name = (string)json["name"];
+            var method = (string)json["method"];
+            var rel = (string)json["rel"];
+            var enctype = (string)json["enctype"];
+            var action = (string)json["action"];
+            var fields = json.ToDictionary("fields", f => Field.Parse((JObject)f));
 
             return new Form(name, method, rel, enctype, action, fields);
         }
@@ -225,7 +218,7 @@ namespace prismic
 			 * @return the current form, in order to chain those calls
 			 */
             public SearchForm Lang(string lang = null) => Set("lang", lang ?? "*");
-            
+
             /**
             * Allows to set which page you want to get for your query.
             *
@@ -356,12 +349,12 @@ namespace prismic
              */
             public SearchForm Query(params IPredicate[] predicates)
             {
-                String result = "";
+                var result = "";
                 foreach (Predicate p in predicates)
                 {
                     result += p.Q();
                 }
-                return this.Query("[" + result + "]");
+                return Query("[" + result + "]");
             }
 
             /**
@@ -377,9 +370,9 @@ namespace prismic
                 {
                     var url = form.Action;
                     var sep = form.Action.Contains("?") ? "&" : "?";
-                    foreach (KeyValuePair<String, StringValues> d in data)
+                    foreach (KeyValuePair<string, StringValues> d in data)
                     {
-                        foreach (String v in d.Value)
+                        foreach (var v in d.Value)
                         {
                             url += sep;
                             url += d.Key;
@@ -399,21 +392,5 @@ namespace prismic
 
             public override string ToString() => DictionaryExtensions.GetQueryString(data);
         }
-
     }
-
-    internal static class DictionaryExtensions
-    {
-        internal static string GetQueryString(IDictionary<string, StringValues> values)
-        {
-            var qb = new QueryBuilder();
-
-            foreach (var value in values)
-                qb.Add(value.Key, value.Value.ToString());
-
-            return qb.ToString();
-        }
-    }
-
 }
-
