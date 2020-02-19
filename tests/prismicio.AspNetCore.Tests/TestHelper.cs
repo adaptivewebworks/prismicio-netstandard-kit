@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -13,57 +12,30 @@ namespace prismic.AspNetCore.Tests
     {
         public static readonly string Endpoint = "https://apsnet-core-sdk.cdn.prismic.io/api";
         public static DefaultPrismicApiAccessor GetDefaultAccessor(PrismicSettings settings = null)
-            => CreatePrismicApiAccessor((sp, httpClient, logger, cache) =>
         {
+            var serviceProvider = GetServiceCollection().AddHttpContextAccessor().BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger<Api>();
+
+            var cache = CreateInMemoryCache();
+            var httpClient = new PrismicHttpClient(new HttpClient());
+            var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+
             if (settings == null)
                 return new DefaultPrismicApiAccessor(
                     httpClient,
                     logger,
-                    cache
+                    cache,
+                    httpContextAccessor
                 );
 
             return new DefaultPrismicApiAccessor(
                     httpClient,
                     logger,
                     cache,
+                    httpContextAccessor,
                     Options.Create(settings)
                 );
-        });
-
-        public static HttpContextAwarePrismicApiAccessor GetHttpContextAwareAccessor(PrismicSettings settings = null)
-            => CreatePrismicApiAccessor((sp, httpClient, logger, cache) =>
-            {
-                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
-
-                if (settings == null)
-                    return new HttpContextAwarePrismicApiAccessor(
-                        httpClient,
-                        logger,
-                        cache,
-                        httpContextAccessor
-                    );
-
-                return new HttpContextAwarePrismicApiAccessor(
-                        httpClient,
-                        logger,
-                        cache,
-                        Options.Create(settings),
-                        httpContextAccessor
-                    );
-            });
-
-        public static TPrismicApiAccessor CreatePrismicApiAccessor<TPrismicApiAccessor>(Func<IServiceProvider, PrismicHttpClient, ILogger<Api>, ICache, TPrismicApiAccessor> builder)
-            where TPrismicApiAccessor : class, IPrismicApiAccessor
-        {
-            var serviceProvider = GetServiceCollection().AddHttpContextAccessor().BuildServiceProvider();
-            var factory = serviceProvider.GetService<ILoggerFactory>();
-            var logger = factory.CreateLogger<Api>();
-
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var cache = new InMemoryCache(memoryCache);
-            var httpClient = new PrismicHttpClient(new HttpClient());
-
-            return builder(serviceProvider, httpClient, logger, cache);
         }
 
         private static IServiceCollection GetServiceCollection()
@@ -74,6 +46,12 @@ namespace prismic.AspNetCore.Tests
             var accessor = GetDefaultAccessor();
 
             return accessor.GetApi(url);
+        }
+
+        public static InMemoryCache CreateInMemoryCache()
+        {
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            return new InMemoryCache(memoryCache);
         }
     }
 }

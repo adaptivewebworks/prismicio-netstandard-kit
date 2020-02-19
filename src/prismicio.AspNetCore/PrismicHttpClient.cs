@@ -20,15 +20,12 @@ namespace prismic
 
         public Task<JToken> Fetch(string url, ILogger logger, ICache cache)
         {
-            JToken fromCache = cache.Get(url);
-            if (fromCache != null)
-            {
-                return Task.FromResult(fromCache);
-            }
-            else
-            {
+            var key = $"prismic_request::{url}";
+            
+            return cache.GetOrSetAsync(key, 600L, () => {
+                logger.LogDebug("Fetching URL: {url}", url);
                 return FetchImpl(url, logger, cache);
-            }
+            });
         }
 
         private static readonly Regex maxAgeRe = new Regex(@"max-age=(\d+)");

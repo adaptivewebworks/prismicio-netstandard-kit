@@ -4,25 +4,29 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace prismic
 {
     public class DefaultPrismicApiAccessor : IPrismicApiAccessor
     {
 
-        protected readonly PrismicHttpClient _prismicHttpClient;
-        protected readonly ILogger<Api> _logger;
-        protected readonly ICache _cache;
-        protected readonly PrismicSettings _settings;
+        readonly PrismicHttpClient _prismicHttpClient;
+        readonly ILogger<Api> _logger;
+        readonly ICache _cache;
+        readonly PrismicSettings _settings;
+        readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache)
+        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IHttpContextAccessor httpContextAccessor)
         {
             _prismicHttpClient = prismicHttpClient;
             _logger = logger;
             _cache = cache;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IOptions<PrismicSettings> settings) : this(prismicHttpClient, logger, cache)
+        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IHttpContextAccessor httpContextAccessor, IOptions<PrismicSettings> settings)
+            : this(prismicHttpClient, logger, cache, httpContextAccessor)
         {
             _settings = settings.Value;
         }
@@ -78,7 +82,7 @@ namespace prismic
         }
 
         protected virtual Api GetApi(ApiData apiData)
-            => new Api(apiData, _cache, _logger, _prismicHttpClient);
+            => new Api(apiData, _cache, _logger, _prismicHttpClient, _httpContextAccessor);
     }
 }
 

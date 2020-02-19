@@ -15,33 +15,31 @@ namespace prismic
         }
 
         public void Set(string key, long ttl, JToken item)
-        {
-            var entry = _memoryCache.CreateEntry(key);
-            entry.Value = item;
-            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(ttl);
-
-            _memoryCache.Set(key, entry);
-        }
+            => _memoryCache.Set(key, item, TimeSpan.FromSeconds(ttl));
 
         public JToken Get(string key)
         {
-            using (var cacheEntry = _memoryCache.Get(key) as ICacheEntry)
-            {
-                if (cacheEntry == null)
-                    return null;
+            if (string.IsNullOrWhiteSpace(key))
+                return null;
 
-                return cacheEntry.Value as JToken;
-            }
+            return _memoryCache.TryGetValue(key, out JToken entry)
+                ? entry
+                : null;
         }
 
-        public Task<T> GetOrSet<T>(string key, Func<Task<T>> factory)
+        public Task<T> GetOrSetAsync<T>(string key, long ttl, Func<Task<T>> factory)
         {
-            return _memoryCache.GetOrCreateAsync(key, async (entry) => {
-                var val = await factory();
-                entry.Value = val;
+            if (string.IsNullOrWhiteSpace(key))
+                return Task.FromResult<T>(default);
 
-                return val;
-            } );
+            return _memoryCache.GetOrCreateAsync(
+                key,
+                (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(ttl);
+                    return factory();
+                }
+            );
         }
     }
 }

@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -11,22 +14,29 @@ namespace prismic.AspNetCore.Tests
         public void AddPrismic_adds_required_dependencies()
         {
             var collection = new ServiceCollection()
-                .AddLogging();
+                .AddLogging()
+                .AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()));
 
-            collection.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()));
+
             collection.AddPrismic();
+
             var serviceProvider = collection.BuildServiceProvider();
 
             var cache = serviceProvider.GetService<ICache>();
+            Assert.NotNull(cache);
             Assert.Equal(typeof(InMemoryCache), cache.GetType());
 
             var client = serviceProvider.GetService<PrismicHttpClient>();
             Assert.NotNull(client);
             Assert.Equal(typeof(PrismicHttpClient), client.GetType());
 
-            var accessor = serviceProvider.GetService<IPrismicApiAccessor>();
-            Assert.NotNull(accessor);
-            Assert.Equal(typeof(DefaultPrismicApiAccessor), accessor.GetType());
+            var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+            Assert.NotNull(httpContextAccessor);
+            Assert.Equal(typeof(HttpContextAccessor), httpContextAccessor.GetType());
+
+            var prismicApiAccessor = serviceProvider.GetService<IPrismicApiAccessor>();
+            Assert.NotNull(prismicApiAccessor);
+            Assert.Equal(typeof(DefaultPrismicApiAccessor), prismicApiAccessor.GetType());
         }
 
         [Fact]
@@ -34,15 +44,15 @@ namespace prismic.AspNetCore.Tests
         {
             var collection = new ServiceCollection();
 
-            collection.AddSingleton<ICache, TestCache>();
+            collection.AddSingleton<ICache, FakeCache>();
             collection.AddPrismic();
             var serviceProvider = collection.BuildServiceProvider();
 
             var cache = serviceProvider.GetService<ICache>();
             Assert.NotNull(cache);
-            Assert.Equal(typeof(TestCache), cache.GetType());
+            Assert.Equal(typeof(FakeCache), cache.GetType());
 
-            cache = serviceProvider.GetService<TestCache>();
+            cache = serviceProvider.GetService<FakeCache>();
             Assert.Null(cache);
         }
 
@@ -51,29 +61,34 @@ namespace prismic.AspNetCore.Tests
         {
             var collection = new ServiceCollection();
 
-            collection.AddSingleton<ICache, TestCache>();
-            collection.AddPrismicHttpContextAware();
+            collection.AddSingleton<ICache, FakeCache>();
+            collection.AddPrismic();
             var serviceProvider = collection.BuildServiceProvider();
 
             var cache = serviceProvider.GetService<ICache>();
             Assert.NotNull(cache);
-            Assert.Equal(typeof(TestCache), cache.GetType());
+            Assert.Equal(typeof(FakeCache), cache.GetType());
 
             var accessor = serviceProvider.GetService<IPrismicApiAccessor>();
             Assert.NotNull(accessor);
-            Assert.Equal(typeof(HttpContextAwarePrismicApiAccessor), accessor.GetType());
+            Assert.Equal(typeof(DefaultPrismicApiAccessor), accessor.GetType());
         }
 
-        private class TestCache : ICache
+        private class FakeCache : ICache
         {
             public JToken Get(string key)
             {
-                throw new System.NotImplementedException();
+                throw new NotImplementedException();
             }
 
             public void Set(string key, long ttl, JToken item)
             {
-                throw new System.NotImplementedException();
+                throw new NotImplementedException();
+            }
+
+            public Task<T> GetOrSetAsync<T>(string key, long ttl, Func<Task<T>> factory)
+            {
+                throw new NotImplementedException();
             }
         }
     }

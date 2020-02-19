@@ -7,6 +7,6 @@ namespace prismic
     public interface ICache {
 		void Set(string key, long ttl, JToken item);
 		JToken Get (string key);
-		Task<T> GetOrSet<T>(string key, Func<Task<T>> factory);
+		Task<T> GetOrSetAsync<T>(string key, long ttl, Func<Task<T>> factory);
 	}
 }

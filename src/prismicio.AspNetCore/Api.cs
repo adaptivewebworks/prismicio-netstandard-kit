@@ -139,22 +139,8 @@ namespace prismic
 
         internal async Task<Response> Fetch(string url)
         {
-            var key = $"prismic_request::{url}";
-            var json = cache.Get(key);
-
-            var json1 = await cache.GetOrSet(key, async () => await _prismicHttpClient.Fetch(url, logger, cache));
-
-            if (json != null)
-            {
-                logger.LogDebug("Serving URL from cache: {url}", url);
-                return Response.Parse(json);
-            }
-
-            logger.LogDebug("Fetching URL: {url}", url);
-            json = await _prismicHttpClient.Fetch(url, logger, cache);
+            var json = await _prismicHttpClient.Fetch(url, logger, cache);
             var response = Response.Parse(json);
-
-            cache.Set(key, 5000L, json);
 
             return response;
         }
