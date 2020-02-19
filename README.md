@@ -1,6 +1,6 @@
 # .NET Standard development kit for prismic.io
 
-##Build Status
+## Build Status
 
 **Release** 
 ![Build Status](https://img.shields.io/azure-devops/build/adaptive-webworks/prismic/13/master)
@@ -10,9 +10,9 @@
 ![Build Status](https://img.shields.io/azure-devops/build/adaptive-webworks/prismic/14/dev)
 ![Code coverage](https://img.shields.io/azure-devops/coverage/adaptive-webworks/prismic/14)
 
-### Getting started
+## Getting started
 
-#### Install the kit for your project
+### Install the kit for your project
 
 This kit can be installed using NuGet [prismic package](https://www.nuget.org/packages/prismicio.netstandard).
 For the latest stable build run the following shell command in your project folder:
@@ -23,11 +23,11 @@ dotnet package add prismicio.netstandard
 
 *(Feel free to detail the proper steps for beginners by [submitting a pull request](https://developers.prismic.io/documentation/UszOeAEAANUlwFpp/contribute-to-the-official-kits).)*
 
-#### Get started with prismic.io
+### Get started with prismic.io
 
 You can find out [how to get started with prismic.io](https://developers.prismic.io/documentation/UjBaQsuvzdIHvE4D/getting-started) on our [prismic.io developer's portal](https://developers.prismic.io/).
 
-#### Get started using the kit
+### Get started using the kit
 
 Also on our [prismic.io developer's portal](https://developers.prismic.io/), on top of our full documentation, you will:
 * get a thorough introduction of [how to use prismic.io kits](https://developers.prismic.io/documentation/UjBe8bGIJ3EKtgBZ/api-documentation#kits-and-helpers), including this one.
@@ -36,33 +36,33 @@ Also on our [prismic.io developer's portal](https://developers.prismic.io/), on 
 
 Until October 2019, the prismic kit was only catered to .NET Framework. The new package has some breaking changes, primarily around API instantiation. Look at the sample project to see how to get an `Api`.
 
-### Changelog
+## Changelog
 
 [ReleaseNodes.md](https://github.com/prismicio/csharp-kit/blob/master/ReleaseNotes.md).
 
-### Contribute to the kit
+## Contribute to the kit
 
 Contribution is open to all developer levels, read our "[Contribute to the official kits](https://developers.prismic.io/documentation/UszOeAEAANUlwFpp/contribute-to-the-official-kits)" documentation to learn more.
 
-#### Install the kit locally
+### Install the kit locally
 
 This kit gets installed like any .NET library.
 
 *(Feel free to detail the proper steps for beginners by [submitting a pull request](https://developers.prismic.io/documentation/UszOeAEAANUlwFpp/contribute-to-the-official-kits).)*
 
-#### Test
+### Test
 
 Please write tests for any bugfix or new feature.
 
 If you find existing code that is not optimally tested and wish to make it better, we really appreciate it; but you should document it on its own branch and its own pull request.
 
-#### Documentation
+### Documentation
 
 Please document any bugfix or new feature.
 
 If you find existing code that is not optimally documented and wish to make it better, we really appreciate it; but you should document it on its own branch and its own pull request.
 
-### Licence
+## Licence
 
 This software is licensed under the Apache 2 license, quoted below.
 
