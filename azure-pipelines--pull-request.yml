@@ -31,4 +31,9 @@ steps:
   displayName: 'Test for $(buildConfiguration)'
   inputs:
     command: test
-    arguments: -c $(buildConfiguration)
+    arguments: -c $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '**/coverage.cobertura.xml'
