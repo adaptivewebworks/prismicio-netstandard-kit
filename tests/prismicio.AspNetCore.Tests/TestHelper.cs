@@ -53,5 +53,11 @@ namespace prismic.AspNetCore.Tests
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             return new InMemoryCache(memoryCache);
         }
+
+        public static PrismicHttpClient CreatePrismicHttpClient(ICache cache, ILogger<PrismicHttpClient> logger, HttpMessageHandler httpMessageHandler = null)
+        {
+            var httpClient = httpMessageHandler == null ? new HttpClient() : new HttpClient(httpMessageHandler);
+            return new PrismicHttpClient(httpClient, cache, logger);
+        }
     }
 }

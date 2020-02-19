@@ -52,9 +52,9 @@ namespace prismic
 
                     case HttpStatusCode.Unauthorized:
                         var errorText = (string)JObject.Parse(body)["error"];
-                        
+
                         _logger.LogWarning("Unauthorised request {message}", errorText);
-                        
+
                         throw new PrismicClientException(
                             errorText == "Invalid access token"
                                 ? PrismicClientException.ErrorCode.INVALID_TOKEN

@@ -215,14 +215,7 @@ namespace prismic.AspNetCore.Tests
         private JToken GetCachedResponse() => _cache.Get($"prismic_request::{_uri}");
 
         private PrismicHttpClient CreateClient(HttpMessageHandler httpMessageHandler)
-        {
-            var httpClient = new HttpClient(httpMessageHandler)
-            {
-                BaseAddress = new Uri("http://test.com/"),
-            };
-
-            return new PrismicHttpClient(httpClient, _cache, _logger);
-        }
+            => TestHelper.CreatePrismicHttpClient(_cache, _logger, httpMessageHandler);
 
         private void AssertResponseIsValid(JToken response) => Assert.True((bool)response["OkResponse"]);
     }

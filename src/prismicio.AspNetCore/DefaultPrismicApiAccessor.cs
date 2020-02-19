@@ -43,22 +43,22 @@ namespace prismic
         }
 
         /**
-		* Entry point to get an {@link Api} object.
-		* Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api");</code>
-		*
-		* @param url the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
-		* @return the usable API object
-		*/
+		 * Entry point to get an {@link Api} object.
+		 * Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api");</code>
+		 *
+		 * @param url the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
+		 * @return the usable API object
+		 */
         public Task<Api> GetApi(string endpoint)
             => GetApi(endpoint, null);
 
         /**
-		* Entry point to get an {@link Api} object.
-		* Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api", null, new Cache.BuiltInCache(999), new Logger.PrintlnLogger());</code>
-		*
-		* @param endpoint the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
-		* @param accessToken Your Oauth access token if you wish to use one (to access future content releases, for instance)
-		*/
+		 * Entry point to get an {@link Api} object.
+		 * Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api", null, new Cache.BuiltInCache(999), new Logger.PrintlnLogger());</code>
+		 *
+		 * @param endpoint the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
+		 * @param accessToken Your Oauth access token if you wish to use one (to access future content releases, for instance)
+		 */
         public async Task<Api> GetApi(string endpoint, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(endpoint))
@@ -70,14 +70,10 @@ namespace prismic
                 url += $"?access_token={WebUtility.UrlEncode(accessToken)}";
 
             JToken json = await _prismicHttpClient.Fetch(url);
-
             ApiData apiData = ApiData.Parse(json);
-            
-            return GetApi(apiData);
-        }
 
-        protected virtual Api GetApi(ApiData apiData)
-            => new Api(apiData, _cache, _logger, _prismicHttpClient, _httpContextAccessor);
+            return new Api(apiData, _prismicHttpClient, _httpContextAccessor);
+        }
     }
 }
 

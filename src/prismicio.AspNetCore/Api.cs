@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace prismic
 {
@@ -13,10 +12,7 @@ namespace prismic
 
         private readonly PrismicHttpClient _prismicHttpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICache cache;
-        private readonly ILogger logger;
         private readonly ApiData apiData;
-
         public IList<Ref> Refs => apiData.Refs;
         public IDictionary<string, Form> Forms => apiData.Forms;
         public IDictionary<string, string> Bookmarks => apiData.Bookmarks;
@@ -24,38 +20,39 @@ namespace prismic
         public IList<string> Tags => apiData.Tags;
         public Experiments Experiments => apiData.Experiments;
 
-        public Api(ApiData apiData, ICache cache, ILogger<Api> logger, PrismicHttpClient client)
+        private string _documentId = "document.id";
+        private string _everything = "everything";
+
+        public Api(ApiData apiData, PrismicHttpClient client)
         {
             this.apiData = apiData;
-            this.cache = cache;
-            this.logger = logger;
             _prismicHttpClient = client;
         }
 
-        public Api(ApiData apiData, ICache cache, ILogger<Api> logger, PrismicHttpClient client, IHttpContextAccessor httpContextAccessor)
+        public Api(ApiData apiData, PrismicHttpClient client, IHttpContextAccessor httpContextAccessor)
         {
             this.apiData = apiData;
-            this.cache = cache;
-            this.logger = logger;
             _prismicHttpClient = client;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Ref Ref(string label) => Refs.FirstOrDefault(r => r.Label == label);
+        public Ref Ref(string label) 
+            => Refs.FirstOrDefault(r => r.Label == label);
 
-        public Ref Master => Refs.FirstOrDefault(r => r.IsMasterRef);
+        public Ref Master
+            => Refs.FirstOrDefault(r => r.IsMasterRef);
 
         public Form.SearchForm Form(string form)
             => new Form.SearchForm(this, Forms[form])
                 .Ref(GetCurrentReference());
 
         public Form.SearchForm Query(string q)
-            => Form("everything")
+            => Form(_everything)
                 .Ref(GetCurrentReference())
                 .Query(q);
 
         public Form.SearchForm Query(params IPredicate[] predicates)
-            => Form("everything")
+            => Form(_everything)
                 .Ref(GetCurrentReference())
                 .Query(predicates);
 
@@ -63,7 +60,7 @@ namespace prismic
          * Retrieve multiple documents from their IDS
          */
         public Form.SearchForm GetByIDs(IEnumerable<string> ids, string reference = null, string lang = null)
-            => Query(Predicates.In("document.id", ids))
+            => Query(Predicates.In(_documentId, ids))
                 .Ref(SetOrGetCurrentReference(reference))
                 .Lang(lang);
 
@@ -72,8 +69,13 @@ namespace prismic
          */
         public async Task<Document> QueryFirst(IPredicate p, string reference = null, string lang = null)
         {
-            var response = await Query(p).Ref(SetOrGetCurrentReference(reference)).Lang(lang).Submit();
+            var response = await Query(p)
+                .Ref(SetOrGetCurrentReference(reference))
+                .Lang(lang)
+                .Submit();
+
             var results = response.Results;
+
             if (results.Count() > 0)
             {
                 return results[0];
@@ -90,7 +92,7 @@ namespace prismic
          * @return the document, or null if it doesn't exist
          */
         public Task<Document> GetByID(string documentId, string reference = null, string lang = null)
-            => QueryFirst(Predicates.At("document.id", documentId), reference, lang);
+            => QueryFirst(Predicates.At(_documentId, documentId), reference, lang);
 
         /**
          * Retrieve a document by its UID on the given reference
@@ -117,24 +119,16 @@ namespace prismic
         {
             var tokenJson = await _prismicHttpClient.Fetch(token);
             var mainDocumentId = tokenJson["mainDocument"];
-            
+
             if (mainDocumentId == null)
-            {
                 return defaultUrl;
-            }
 
-            var resp = await Form("everything")
-                .Query(Predicates.At("document.id", mainDocumentId.ToString()))
-                .Ref(token)
-                .Lang()
-                .Submit();
+            var resp = await GetByID(mainDocumentId.ToString(), token);
 
-            if (resp.Results.Count == 0)
-            {
+            if (resp == null)
                 return defaultUrl;
-            }
 
-            return linkResolver.Resolve(resp.Results[0]);
+            return linkResolver.Resolve(resp);
         }
 
         internal async Task<Response> Fetch(string url)
@@ -157,9 +151,9 @@ namespace prismic
 
         private string GetCookie(string name)
         {
-            if(_httpContextAccessor?.HttpContext == null)
+            if (_httpContextAccessor?.HttpContext == null)
                 return null;
-                
+
             _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(name, out string cookieValue);
 
             if (!string.IsNullOrWhiteSpace(cookieValue))
@@ -169,4 +163,3 @@ namespace prismic
         }
     }
 }
-
