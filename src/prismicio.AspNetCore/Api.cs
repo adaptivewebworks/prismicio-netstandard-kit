@@ -20,8 +20,8 @@ namespace prismic
         public IList<string> Tags => apiData.Tags;
         public Experiments Experiments => apiData.Experiments;
 
-        private string _documentId = "document.id";
-        private string _everything = "everything";
+        private const string _documentId = "document.id";
+        private const string _everything = "everything";
 
         public Api(ApiData apiData, PrismicHttpClient client)
         {
@@ -43,7 +43,7 @@ namespace prismic
             => Refs.FirstOrDefault(r => r.IsMasterRef);
 
         public Form.SearchForm Form(string form)
-            => new Form.SearchForm(this, Forms[form])
+            => new Form.SearchForm(_prismicHttpClient, Forms[form])
                 .Ref(GetCurrentReference());
 
         public Form.SearchForm Query(string q)

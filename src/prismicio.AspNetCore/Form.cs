@@ -77,25 +77,21 @@ namespace prismic
          */
         public class SearchForm
         {
-
-            private readonly Api api;
+            private readonly PrismicHttpClient _prismicHttpClient;
             private readonly Form form;
             private readonly IDictionary<string, StringValues> data;
 
-            public SearchForm(Api api, Form form)
+            public SearchForm(PrismicHttpClient prismicHttpClient, Form form)
             {
-                this.api = api;
+                _prismicHttpClient = prismicHttpClient;
                 this.form = form;
 
-                //TODO... seen this pattern in API Data refactor me...
-                data = new Dictionary<String, StringValues>();
-                foreach (KeyValuePair<String, Field> entry in form.Fields)
-                {
-                    if (entry.Value.DefaultValue != null)
-                    {
-                        data[entry.Key] = new StringValues(entry.Value.DefaultValue);
-                    }
-                }
+                data = form.Fields
+                    .Where(entry => entry.Value.DefaultValue != null)
+                    .ToDictionary(
+                        entry => entry.Key,
+                        entry => new StringValues(entry.Value.DefaultValue)
+                    );
             }
 
             /**
@@ -111,15 +107,11 @@ namespace prismic
             public SearchForm Set(string field, string value)
             {
                 if (value == null)
-                {
-                    // null value, do nothing
                     return this;
-                }
-                Field fieldDesc = form.Fields[field];
-                if (fieldDesc == null)
-                {
-                    throw new ArgumentException("Unknown field " + field);
-                }
+                
+                if (!form.Fields.TryGetValue(field, out var fieldDesc))
+                    throw new ArgumentException("Unknown field", nameof(field));
+                
                 if (fieldDesc.IsMultiple)
                 {
                     IList<string> existingValue;
@@ -149,15 +141,12 @@ namespace prismic
              */
             public SearchForm Set(string field, int value)
             {
-                Field fieldDesc = form.Fields[field];
-                if (fieldDesc == null)
-                {
-                    throw new ArgumentException("Unknown field " + field);
-                }
+                if (!form.Fields.TryGetValue(field, out var fieldDesc))
+                    throw new ArgumentException("Unknown field", nameof(field));
+                
                 if ("Integer" != fieldDesc.Type)
-                {
-                    throw new ArgumentException("Cannot set an Integer value to field " + field + " of type " + fieldDesc.Type);
-                }
+                    throw new ArgumentException($"Cannot set an Integer value to field {field} of type {fieldDesc.Type}");
+                
                 return Set(field, value.ToString());
             }
 
@@ -272,13 +261,13 @@ namespace prismic
              */
             public SearchForm Fetch(params string[] fields)
             {
-                if (fields.Length == 0)
+                if (fields?.Length == 0)
                 {
                     return this; // Noop
                 }
                 else
                 {
-                    return Set("fetch", String.Join(",", fields));
+                    return Set("fetch", string.Join(",", fields));
                 }
             }
 
@@ -301,7 +290,7 @@ namespace prismic
             }
 
             // Temporary hack for Backward compatibility
-            private string Strip(String q)
+            private string Strip(string q)
             {
                 if (q == null)
                     return "";
@@ -324,7 +313,7 @@ namespace prismic
              * @param q the query to pass
              * @return the current form, in order to chain those calls
              */
-            public SearchForm Query(String q)
+            public SearchForm Query(string q)
             {
                 Field fieldDesc = form.Fields["q"];
                 if (fieldDesc != null && fieldDesc.IsMultiple)
@@ -364,30 +353,26 @@ namespace prismic
              *
              * @return the list of documents, that can be directly used as such.
              */
-            public Task<Response> Submit()
+            public async Task<Response> Submit()
             {
-                if ("GET" == form.Method && "application/x-www-form-urlencoded" == form.Enctype)
-                {
-                    var url = form.Action;
-                    var sep = form.Action.Contains("?") ? "&" : "?";
-                    foreach (KeyValuePair<string, StringValues> d in data)
-                    {
-                        foreach (var v in d.Value)
-                        {
-                            url += sep;
-                            url += d.Key;
-                            url += "=";
-                            url += WebUtility.UrlEncode(v);
-                            sep = "&";
-                        }
-                    }
-                    // var uri = new Uri(form.Action);
-                    return api.Fetch(url);
-                }
-                else
-                {
+                if ("GET" != form.Method || "application/x-www-form-urlencoded" != form.Enctype)
                     throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, "Form type not supported");
+
+                var url = form.Action;
+                var sep = form.Action.Contains("?") ? "&" : "?";
+                foreach (KeyValuePair<string, StringValues> d in data)
+                {
+                    foreach (var v in d.Value)
+                    {
+                        url += sep;
+                        url += d.Key;
+                        url += "=";
+                        url += WebUtility.UrlEncode(v);
+                        sep = "&";
+                    }
                 }
+
+                return Response.Parse(await _prismicHttpClient.Fetch(url));
             }
 
             public override string ToString() => DictionaryExtensions.GetQueryString(data);
