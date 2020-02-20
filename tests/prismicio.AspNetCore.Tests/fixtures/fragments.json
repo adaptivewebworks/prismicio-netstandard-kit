@@ -17,6 +17,23 @@
 			"bool": {
 				"type": "Boolean",
 				"value": true
+			},
+			"group": {
+				"type": "Group",
+				"value": [
+					{
+						"group_text": {
+							"type": "Text",
+							"value": "Test1"
+						}
+					},
+					{
+						"group_text": {
+							"type": "Text",
+							"value": "Test1"
+						}
+					}
+				]
 			}
 		}
 	}

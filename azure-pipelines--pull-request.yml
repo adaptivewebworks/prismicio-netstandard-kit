@@ -19,6 +19,10 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: UseDotNet@2
+  inputs: 
+    packageType: 'sdk'
+    version: '3.1.x'
 
 - script: dotnet clean
   displayName: 'Clean Build Directories'
@@ -27,4 +31,9 @@ steps:
   displayName: 'Test for $(buildConfiguration)'
   inputs:
     command: test
-    arguments: -c $(buildConfiguration)
+    arguments: -c $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '**/coverage.cobertura.xml'

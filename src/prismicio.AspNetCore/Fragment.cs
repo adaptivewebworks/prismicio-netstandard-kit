@@ -19,7 +19,7 @@ namespace prismic
             public string Value { get; }
             public Text(string value)
             {
-                this.Value = value;
+                Value = value;
             }
 
             public string AsHtml() => $"<span class=\"text\">{WebUtility.HtmlEncode(Value)}</span>";
@@ -296,16 +296,9 @@ namespace prismic
             }
             public string AsHtml() => $"<time datetime=\"{Value.ToString("o")}\">{Value}</time>";
             public static Date Parse(JToken json)
-            {
-                try
-                {
-                    return new Date(DateTime.ParseExact((string)json, "yyyy-MM-dd", CultureInfo.InvariantCulture));
-                }
-                catch (FormatException)
-                {
-                    return null;
-                }
-            }
+                => DateTime.TryParseExact(json.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+                    ? new Date(date)
+                    : null;
         }
 
         public class Timestamp : IFragment

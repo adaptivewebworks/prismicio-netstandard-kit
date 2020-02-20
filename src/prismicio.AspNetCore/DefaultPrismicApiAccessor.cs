@@ -4,25 +4,29 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace prismic
 {
     public class DefaultPrismicApiAccessor : IPrismicApiAccessor
     {
 
-        private readonly PrismicHttpClient _prismicHttpClient;
-        private readonly ILogger<Api> _logger;
-        private readonly ICache _cache;
-        private readonly PrismicSettings _settings;
+        readonly PrismicHttpClient _prismicHttpClient;
+        readonly ILogger<Api> _logger;
+        readonly ICache _cache;
+        readonly PrismicSettings _settings;
+        readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache)
+        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IHttpContextAccessor httpContextAccessor)
         {
             _prismicHttpClient = prismicHttpClient;
             _logger = logger;
             _cache = cache;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IOptions<PrismicSettings> settings) : this(prismicHttpClient, logger, cache)
+        public DefaultPrismicApiAccessor(PrismicHttpClient prismicHttpClient, ILogger<Api> logger, ICache cache, IHttpContextAccessor httpContextAccessor, IOptions<PrismicSettings> settings)
+            : this(prismicHttpClient, logger, cache, httpContextAccessor)
         {
             _settings = settings.Value;
         }
@@ -39,22 +43,22 @@ namespace prismic
         }
 
         /**
-		* Entry point to get an {@link Api} object.
-		* Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api");</code>
-		*
-		* @param url the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
-		* @return the usable API object
-		*/
+		 * Entry point to get an {@link Api} object.
+		 * Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api");</code>
+		 *
+		 * @param url the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
+		 * @return the usable API object
+		 */
         public Task<Api> GetApi(string endpoint)
             => GetApi(endpoint, null);
 
         /**
-		* Entry point to get an {@link Api} object.
-		* Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api", null, new Cache.BuiltInCache(999), new Logger.PrintlnLogger());</code>
-		*
-		* @param endpoint the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
-		* @param accessToken Your Oauth access token if you wish to use one (to access future content releases, for instance)
-		*/
+		 * Entry point to get an {@link Api} object.
+		 * Example: <code>API api = API.get("https://lesbonneschoses.prismic.io/api", null, new Cache.BuiltInCache(999), new Logger.PrintlnLogger());</code>
+		 *
+		 * @param endpoint the endpoint of your prismic.io content repository, typically https://yourrepoid.prismic.io/api
+		 * @param accessToken Your Oauth access token if you wish to use one (to access future content releases, for instance)
+		 */
         public async Task<Api> GetApi(string endpoint, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(endpoint))
@@ -65,15 +69,10 @@ namespace prismic
             if (!string.IsNullOrWhiteSpace(accessToken))
                 url += $"?access_token={WebUtility.UrlEncode(accessToken)}";
 
-            JToken json = _cache.Get(url);
-
-            if (json == null)
-            {
-                json = await _prismicHttpClient.Fetch(url, _logger, _cache);
-                _cache.Set(url, 5000L, json);
-            }
+            JToken json = await _prismicHttpClient.Fetch(url);
             ApiData apiData = ApiData.Parse(json);
-            return new Api(apiData, _cache, _logger, _prismicHttpClient);
+
+            return new Api(apiData, _prismicHttpClient, _httpContextAccessor);
         }
     }
 }

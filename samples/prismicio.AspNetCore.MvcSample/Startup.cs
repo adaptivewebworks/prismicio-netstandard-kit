@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using prismic;
 
 namespace prismicio.AspNetCore.MvcSample
@@ -21,12 +22,12 @@ namespace prismicio.AspNetCore.MvcSample
         {
             services.AddPrismic();
             services.Configure<PrismicSettings>(Configuration.GetSection("prismic"));
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddRazorPages();
+            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -41,8 +42,13 @@ namespace prismicio.AspNetCore.MvcSample
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseRouting();
             
-            app.UseMvc();
+            app.UseEndpoints(s => 
+            {
+                s.MapRazorPages();
+                s.MapDefaultControllerRoute();
+            });
         }
     }
 }
