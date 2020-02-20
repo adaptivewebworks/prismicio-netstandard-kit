@@ -4,11 +4,11 @@
 
 **Release** 
 ![Build Status](https://img.shields.io/azure-devops/build/adaptive-webworks/prismic/13/master)
-![Code coverage](https://img.shields.io/azure-devops/coverage/adaptive-webworks/prismic/13)
+![Code coverage](https://img.shields.io/azure-devops/coverage/adaptive-webworks/prismic/13/master)
 
 **Alpha** 
 ![Build Status](https://img.shields.io/azure-devops/build/adaptive-webworks/prismic/14/dev)
-![Code coverage](https://img.shields.io/azure-devops/coverage/adaptive-webworks/prismic/14)
+![Code coverage](https://img.shields.io/azure-devops/coverage/adaptive-webworks/prismic/14/dev)
 
 ## Getting started
 
