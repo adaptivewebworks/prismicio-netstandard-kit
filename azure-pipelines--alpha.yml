@@ -17,7 +17,6 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-
 - script: dotnet clean
   displayName: 'Clean Build Directories'
 
@@ -37,7 +36,12 @@ steps:
   displayName: 'Test for $(buildConfiguration)'
   inputs:
     command: test
-    arguments: -c $(buildConfiguration) --no-build
+    arguments: -c $(buildConfiguration) --no-build  /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '**/coverage.cobertura.xml'
 
 - task: DotNetCoreCLI@2
   displayName: 'Create NuGet Package'
