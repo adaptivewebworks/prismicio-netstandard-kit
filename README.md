@@ -35,9 +35,10 @@ Also on our [prismic.io developer's portal](https://developers.prismic.io/), on 
 ### Migration from the old prismicio kit
 
 Until October 2019, the prismic kit was only catered to .NET Framework. The new package has some breaking changes, primarily around API instantiation. Look at the sample project to see how to get an `Api`.
+Although every effort has been made to make the kit familiar new kit follows a more idiomatic C# coding style. When migrating a large code base to the new library, this gist might get your project building a little quicker.
+https://gist.github.com/benembery/f83800262f9713d01324273d2a7f1a12
 
 ## Changelog
-
 [ReleaseNodes.md](https://github.com/prismicio/csharp-kit/blob/master/ReleaseNotes.md).
 
 ## Contribute to the kit
