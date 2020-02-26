@@ -106,7 +106,6 @@ namespace prismic
         public Task<Document> GetBookmark(string bookmark, string reference = null)
             => GetByID(apiData.Bookmarks[bookmark], reference);
 
-
         /**
         * Return the URL to display a given preview
         * @param token as received from Prismic server to identify the content to preview
@@ -129,14 +128,6 @@ namespace prismic
                 return defaultUrl;
 
             return linkResolver.Resolve(resp);
-        }
-
-        internal async Task<Response> Fetch(string url)
-        {
-            var json = await _prismicHttpClient.Fetch(url);
-            var response = Response.Parse(json);
-
-            return response;
         }
 
         private string SetOrGetCurrentReference(string reference = null)
