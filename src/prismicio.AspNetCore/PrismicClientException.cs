@@ -7,7 +7,8 @@
             MALFORMED_URL,
             AUTHORIZATION_NEEDED,
             INVALID_TOKEN,
-            UNEXPECTED
+            UNEXPECTED,
+            INVALID_PREVIEW
         }
 
         public ErrorCode Code { get; }

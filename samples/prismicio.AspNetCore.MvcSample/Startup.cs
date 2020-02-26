@@ -42,6 +42,7 @@ namespace prismicio.AspNetCore.MvcSample
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UsePrismicPreviewExpiredMiddleware();
             app.UseRouting();
             
             app.UseEndpoints(s => 

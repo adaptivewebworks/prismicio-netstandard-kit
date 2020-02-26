@@ -39,6 +39,7 @@ namespace prismic
             using (var response = await _client.GetAsync(url))
             {
                 var body = await response.Content.ReadAsStringAsync();
+                string errorText;
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
@@ -51,7 +52,7 @@ namespace prismic
                         return json;
 
                     case HttpStatusCode.Unauthorized:
-                        var errorText = (string)JObject.Parse(body)["error"];
+                        errorText = (string)JObject.Parse(body)["error"];
 
                         _logger.LogWarning("Unauthorised request {message}", errorText);
 
@@ -62,8 +63,15 @@ namespace prismic
                             errorText
                         );
 
+                    case HttpStatusCode.NotFound:
+                        errorText = (string)JObject.Parse(body)["error"];
+
+                        if(errorText == "This preview token has expired")
+                            throw new PrismicClientException(PrismicClientException.ErrorCode.INVALID_PREVIEW, errorText);
+
+                        throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, body);
+                        
                     default:
-                        _logger.LogError("An unexpected error occorued {statusCode}", response.StatusCode);
                         throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, body);
                 }
             }
