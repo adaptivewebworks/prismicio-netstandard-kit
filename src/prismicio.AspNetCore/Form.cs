@@ -108,10 +108,10 @@ namespace prismic
             {
                 if (value == null)
                     return this;
-                
+
                 if (!form.Fields.TryGetValue(field, out var fieldDesc))
                     throw new ArgumentException("Unknown field", nameof(field));
-                
+
                 if (fieldDesc.IsMultiple)
                 {
                     IList<string> existingValue;
@@ -143,10 +143,10 @@ namespace prismic
             {
                 if (!form.Fields.TryGetValue(field, out var fieldDesc))
                     throw new ArgumentException("Unknown field", nameof(field));
-                
+
                 if ("Integer" != fieldDesc.Type)
                     throw new ArgumentException($"Cannot set an Integer value to field {field} of type {fieldDesc.Type}");
-                
+
                 return Set(field, value.ToString());
             }
 
