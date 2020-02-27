@@ -61,6 +61,11 @@ namespace prismic
 		 */
         public async Task<Api> GetApi(string endpoint, string accessToken)
         {
+            Api api = GetCachedApi(endpoint, accessToken);
+
+            if (api != null)
+                return api;
+
             if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException("Invalid endpoint uri", nameof(endpoint));
 
@@ -72,8 +77,38 @@ namespace prismic
             JToken json = await _prismicHttpClient.Fetch(url);
             ApiData apiData = ApiData.Parse(json);
 
-            return new Api(apiData, _prismicHttpClient, _httpContextAccessor);
+            api = new Api(apiData, _prismicHttpClient, _httpContextAccessor);
+
+            SetCachedApi(endpoint, accessToken, api);
+
+            return api;
         }
+
+        private void SetCachedApi(string endpoint, string accessToken, Api api)
+        {
+            var items = _httpContextAccessor?.HttpContext?.Items;
+
+            if (items == null || api == null)
+                return;
+
+            items[GetCacheKey(endpoint, accessToken)] = api;
+        }
+
+        private Api GetCachedApi(string endpoint, string accessToken)
+        {
+            var items = _httpContextAccessor?.HttpContext?.Items;
+
+            if (items == null)
+                return null;
+
+            var key = GetCacheKey(endpoint, accessToken);
+
+            if (!items.ContainsKey(key))
+                return null;
+
+            return (Api)items[key];
+        }
+
+        private string GetCacheKey(string endpoint, string accessToken) => $"PRISMIC::API__{endpoint}_{accessToken}";
     }
 }
-
