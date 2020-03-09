@@ -4,9 +4,6 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-  - master
-
 pr: none
 
 pool:
@@ -14,14 +11,15 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  PRERELEASE_VERSION: 'pre.$(Build.BuildNumber)'
 
 steps:
 
-- script: dotnet clean
-  displayName: 'Clean Build Directories'
+- script: dotnet clean --configuration $(buildConfiguration)
+  displayName: '.NET - Clean'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build for $(buildConfiguration)'
+  displayName: '.NET - Restore & Build'
   inputs:
     command: build
     arguments: -c $(buildConfiguration)
@@ -29,25 +27,31 @@ steps:
     includesymbols: true
 
 - task: DotNetCoreCLI@2
-  displayName: 'Test for $(buildConfiguration)'
+  displayName: '.NET - Test'
   inputs:
     command: test
     arguments: -c $(buildConfiguration) --no-build  /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
 - task: PublishCodeCoverageResults@1
+  displayName: '.NET - Publish Code Coverage Results'
   inputs:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: '**/coverage.cobertura.xml'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Create NuGet Package'
+  displayName: '.NET - Create NuGet Package'
   inputs:
     command: custom
     custom: pack
-    arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages -v m --no-build --include-symbols
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/dev') }}:
+      arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages --version-suffix $(PRERELEASE_VERSION) -v m --no-build --include-symbols
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+      arguments: src/prismicio.AspNetCore/prismicio.AspNetCore.csproj -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/packages -v m --no-build --include-symbols
     zipAfterPublish: true
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/dev')))
 
 - task: NuGetCommand@2
+  displayName: '.NET - Push package to nuget'
   inputs:
     command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/*.nupkg;!$(Build.ArtifactStagingDirectory)/packages/*.symbols.nupkg'
