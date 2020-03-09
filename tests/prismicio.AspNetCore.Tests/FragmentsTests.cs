@@ -1,11 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace prismic.AspNetCore.Tests
 {
-    public class FragmentsTests
+    public class FragmentTests
     {
         [Fact]
         public async Task ShouldAccessGroupField()
@@ -67,6 +68,14 @@ namespace prismic.AspNetCore.Tests
             var document = Fixtures.GetDocument("fragments.json");
             var timestamp = document.GetTimestamp("article.date");
             Assert.Equal(2016, timestamp.Value.Year);
+        }
+
+        [Fact]
+        public void ShouldParseBoolean()
+        {
+            var document = Fixtures.GetDocument("fragments.json");
+            var boolFragment = document.GetBoolean("article.bool");
+            Assert.True(boolFragment.Value);
         }
 
         [Fact]
@@ -134,6 +143,23 @@ namespace prismic.AspNetCore.Tests
 		    var authorRaw2 = authorsGroup.GroupDocs.FirstOrDefault().GetRaw("author_ref");
 		    Assert.Equal(15, authorRaw.Value.Children().Count());
 		    Assert.Equal(15, authorRaw2.Value.Children().Count());
+        }
+
+        [Fact]
+        public void ShouldParseDate()
+        {
+            var date = fragments.Date.Parse(JToken.Parse("\"2020-02-20\""));
+            
+            Assert.NotNull(date);
+            Assert.Equal(new DateTime(2020, 02, 20), date.Value);
+        }
+
+        [Fact]
+        public void Returns_null_for_invalid_date()
+        {
+            var date = fragments.Date.Parse(JToken.Parse("\"bad date\""));
+            
+            Assert.Null(date);
         }
     }
 }

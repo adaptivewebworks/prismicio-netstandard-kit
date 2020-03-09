@@ -1,6 +1,9 @@
 #Autosave files
 *~
 
+# Test coverage
+**/lcov.info
+
 # Build/test output
 obj
 bin

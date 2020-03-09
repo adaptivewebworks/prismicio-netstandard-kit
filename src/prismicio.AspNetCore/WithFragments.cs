@@ -38,11 +38,11 @@ namespace prismic
             if (!Fragments.TryGetValue(field, out IFragment single))
                 return null;
 
-            IList<IFragment> multi = GetAll(field);
-            if (multi.Count > 0)
-            {
-                return multi[0];
-            }
+            // IList<IFragment> multi = GetAll(field);
+            // if (multi.Count > 0)
+            // {
+            //     return multi[0];
+            // }
             return single;
         }
 
@@ -76,6 +76,10 @@ namespace prismic
             if (frag is Number number1)
             {
                 return number1.Value.ToString();
+            }
+            if (frag is BooleanFragment boolean)
+            {
+                return boolean.Value.ToString();
             }
             return null;
         }
@@ -199,6 +203,12 @@ namespace prismic
             }
         }
 
+        public BooleanFragment GetBoolean(string field)
+        {
+            IFragment fragment = Get(field);
+            return (BooleanFragment)fragment;
+        }
+
         public string AsHtml(DocumentLinkResolver linkResolver) => AsHtml(linkResolver, null);
 
         public string AsHtml(DocumentLinkResolver linkResolver, HtmlSerializer htmlSerializer)
@@ -253,7 +263,7 @@ namespace prismic
 
         public Raw GetRaw(string field)
         {
-            IFragment frag = Get(field);
+            var frag = Get(field);
             return (Raw)frag;
         }
     }

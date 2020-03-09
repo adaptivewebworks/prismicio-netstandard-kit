@@ -40,9 +40,9 @@ namespace prismic
             var refs = json["refs"].Select(r => Ref.Parse((JObject)r)).ToList();
             var tags = json["tags"].Select(r => (string)r).ToList();
 
-            var bookmarks = Map<string>(json, "bookmarks", b => (string)b);
-            var types = Map<string>(json, "types", t => (string)t);
-            var forms = Map<Form>(json, "forms", f => Form.Parse((JObject)f));
+            var bookmarks = json.ToDictionary("bookmarks", b => (string)b);
+            var types = json.ToDictionary("types", t => (string)t);
+            var forms = json.ToDictionary("forms", f => Form.Parse((JObject)f));
 
             var oauthInitiateEndpoint = (string)json["oauth_initiate"];
             var oauthTokenEndpoint = (string)json["oauth_token"];
@@ -51,20 +51,6 @@ namespace prismic
 
             return new ApiData(refs, bookmarks, types, tags, forms, experiments, oauthInitiateEndpoint, oauthTokenEndpoint);
         }
-
-        private static Dictionary<string, T> Map<T>(JToken json, string key, Func<JToken, T> mapper)
-        {
-            var source = (JObject)json[key];
-            var dest = new Dictionary<string, T>();
-
-            foreach (KeyValuePair<string, JToken> pair in source)
-            {
-                dest[pair.Key] = mapper(pair.Value);
-            }
-
-            return dest;
-        }
-
     }
 
 }

@@ -112,10 +112,6 @@ namespace prismic
             July, August, September, October, November, December
         }
 
-        /**
-         * TODO this is the biggest candidate for idomatic refactoring, capitalizing method names.
-         * The cost being compatibility, but this could be handled using a compat library.
-         */
         public static IPredicate At(string fragment, string value) => new Predicate("at", fragment, value);
 
         public static IPredicate At(string fragment, string[] values) => new Predicate("at", fragment, values);

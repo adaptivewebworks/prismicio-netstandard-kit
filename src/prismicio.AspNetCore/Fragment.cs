@@ -14,13 +14,12 @@ namespace prismic
 
     namespace fragments
     {
-
         public class Text : IFragment
         {
             public string Value { get; }
             public Text(string value)
             {
-                this.Value = value;
+                Value = value;
             }
 
             public string AsHtml() => $"<span class=\"text\">{WebUtility.HtmlEncode(Value)}</span>";
@@ -250,7 +249,7 @@ namespace prismic
             public bool IsBroken { get; }
             public string Lang { get; }
 
-            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, IFragment> fragments, Boolean broken)
+            public DocumentLink(string id, string uid, string type, ISet<string> tags, string slug, string lang, IDictionary<string, IFragment> fragments, bool broken)
                 : base(fragments)
             {
                 Id = id;
@@ -269,7 +268,7 @@ namespace prismic
             public static DocumentLink Parse(JToken json)
             {
                 JObject document = (JObject)json["document"];
-                Boolean broken = (Boolean)json["isBroken"];
+                bool broken = (bool)json["isBroken"];
                 string id = (string)document["id"];
                 string type = (string)document["type"];
                 string slug = (string)document["slug"];
@@ -297,16 +296,9 @@ namespace prismic
             }
             public string AsHtml() => $"<time datetime=\"{Value.ToString("o")}\">{Value}</time>";
             public static Date Parse(JToken json)
-            {
-                try
-                {
-                    return new Date(DateTime.ParseExact((string)json, "yyyy-MM-dd", CultureInfo.InvariantCulture));
-                }
-                catch (FormatException)
-                {
-                    return null;
-                }
-            }
+                => DateTime.TryParseExact(json.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+                    ? new Date(date)
+                    : null;
         }
 
         public class Timestamp : IFragment
@@ -641,6 +633,8 @@ namespace prismic
                         return Group.Parse(json);
                     case "SliceZone":
                         return SliceZone.Parse(json);
+                    case "Boolean":
+                        return BooleanFragment.Parse(json);
                     default:
                         return json != null ? Raw.Parse(json) : null;
                 }

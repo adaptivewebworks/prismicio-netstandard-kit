@@ -256,28 +256,28 @@ namespace prismic
                 if (block is Heading)
                 {
                     Heading heading = (Heading)block;
-                    return ("<h" + heading.Level + classCode + ">" + content + "</h" + heading.Level + ">");
+                    return "<h" + heading.Level + classCode + ">" + content + "</h" + heading.Level + ">";
                 }
                 else if (block is Paragraph)
                 {
-                    return ("<p" + classCode + ">" + content + "</p>");
+                    return "<p" + classCode + ">" + content + "</p>";
                 }
                 else if (block is Preformatted)
                 {
-                    return ("<pre" + classCode + ">" + content + "</pre>");
+                    return "<pre" + classCode + ">" + content + "</pre>";
                 }
                 else if (block is ListItem)
                 {
-                    return ("<li" + classCode + ">" + content + "</li>");
+                    return "<li" + classCode + ">" + content + "</li>";
                 }
                 else if (block is Image image)
                 {
                     var labelCode = block.Label == null ? "" : (" " + block.Label);
-                    return ("<p class=\"block-img" + labelCode + "\">" + image.View.AsHtml(linkResolver) + "</p>");
+                    return "<p class=\"block-img" + labelCode + "\">" + image.View.AsHtml(linkResolver) + "</p>";
                 }
                 else if (block is Embed embed)
                 {
-                    return (embed.Obj.AsHtml());
+                    return embed.Obj.AsHtml();
                 }
                 return "";
             }
