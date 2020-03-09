@@ -55,4 +55,4 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/packages/*.nupkg;!$(Build.ArtifactStagingDirectory)/packages/*.symbols.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'NuGet.org'
-  enabled: false
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/dev')))
