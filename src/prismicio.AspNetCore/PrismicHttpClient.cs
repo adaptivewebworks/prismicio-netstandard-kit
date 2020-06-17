@@ -36,9 +36,9 @@ namespace prismic
 
             _logger.LogDebug("Fetching URL: {url}", url);
 
-            using (var response = await _client.GetAsync(url))
+            using (var response = await _client.GetAsync(url).ConfigureAwait(false))
             {
-                var body = await response.Content.ReadAsStringAsync();
+                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 string errorText;
                 switch (response.StatusCode)
                 {

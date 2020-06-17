@@ -72,7 +72,8 @@ namespace prismic
             var response = await Query(p)
                 .Ref(SetOrGetCurrentReference(reference))
                 .Lang(lang)
-                .Submit();
+                .Submit()
+                .ConfigureAwait(false);
 
             var results = response.Results;
 
