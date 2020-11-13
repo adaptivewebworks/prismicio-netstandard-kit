@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Linq;
 using System;
 using prismic.fragments;
 using Xunit;
@@ -59,6 +58,19 @@ namespace prismic.AspNetCore.Tests
 			CompositeSlice secondSlice = (CompositeSlice)sliceZone.Slices[1];
 			String expectedUrl = "https://prismic-io.s3.amazonaws.com/levi-templeting%2Fdc0bfab3-d222-44a6-82b8-c74f8cdc6a6b_200_s.gif";
 			Assert.Equal(expectedUrl, secondSlice.GetItems().GroupDocs[0].GetImage("image").GetView("main").Url);
+		}
+
+		[Fact]
+		public void Returns_linked_document_fiels_of_CompositeSlices()
+		{
+			var document = Fixtures.GetDocument("composite_slices_linked_documents.json");
+			var resolver = DocumentLinkResolver.For(doc => string.Format ("http://localhost/{0}/{1}", doc.Type, doc.Id));
+			var sliceZone = document.GetSliceZone("page.page_content");
+			var firstSlice = (CompositeSlice)sliceZone.Slices[0];
+			var linkedDocument = (DocumentLink)firstSlice.GetItems().GroupDocs[0].GetLink("linked_document");
+			var field = linkedDocument.GetStructuredText("indicator.title");
+			
+			Assert.Equal("<h1>Indicator Heading</h1>", field.AsHtml(resolver));
 		}
 	}
 }
