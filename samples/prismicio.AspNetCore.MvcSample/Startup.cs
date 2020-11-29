@@ -22,6 +22,7 @@ namespace prismicio.AspNetCore.MvcSample
         {
             services.AddPrismic();
             services.Configure<PrismicSettings>(Configuration.GetSection("prismic"));
+            services.AddSingleton<DocumentLinkResolver, DefaultDocumentLinkResolver>();
             services.AddRazorPages();
             services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
@@ -42,10 +43,11 @@ namespace prismicio.AspNetCore.MvcSample
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            // Handle exceptions caused when preview tokens expire...
             app.UsePrismicPreviewExpiredMiddleware();
             app.UseRouting();
-            
-            app.UseEndpoints(s => 
+
+            app.UseEndpoints(s =>
             {
                 s.MapRazorPages();
                 s.MapDefaultControllerRoute();

@@ -19,7 +19,9 @@ namespace prismic
                 string fragmentType = (string)field.Value["type"];
                 JToken fragmentValue = field.Value["value"];
                 IFragment fragment = FragmentParser.Parse(fragmentType, fragmentValue);
-                if (fragment != null) fragmentMap[field.Key] = fragment;
+                
+                if (fragment != null) 
+                    fragmentMap[field.Key] = fragment;
             }
 
             return new GroupDoc(fragmentMap);

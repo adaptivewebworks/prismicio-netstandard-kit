@@ -46,22 +46,34 @@ namespace prismic
             {
                 return fragments;
             }
+
             var type = (string)json["type"];
 
             if (json["data"] == null)
             {
                 return fragments;
             }
-            foreach (var field in ((JObject)json["data"][type]))
+
+            foreach (var field in (JObject)json["data"][type])
             {
-                var fragmentName = $"{type}.{field.Key}";
-                if (field.Value is JArray rawFragments)
+                var fragmentNameBase = $"{type}.{field.Key}";
+                var fragmentName = fragmentNameBase;
+
+                if (field.Value is JArray fieldArray)
                 {
-                    var i = 0;
-                    foreach (JToken elt in rawFragments)
+                    var structuredText = prismic.fragments.StructuredText.Parse(field.Value);
+                    if (structuredText != null)
                     {
-                        fragmentName = type + "." + field.Key + "[" + i++ + "]";
-                        AddFragment(fragments, $"{fragmentName}[{i++}]", MapFragment(elt));
+                        fragments[fragmentName] = structuredText;
+                    }
+                    else
+                    {
+                        var i = 0;
+                        foreach (JToken elt in fieldArray)
+                        {
+                            fragmentName = $"{fragmentNameBase}[{i++}]";
+                            AddFragment(fragments, fragmentName, MapFragment(elt));
+                        }
                     }
                 }
                 else
@@ -73,7 +85,7 @@ namespace prismic
         }
 
         private static IFragment MapFragment(JToken field)
-            => prismic.fragments.FragmentParser.Parse((string)field["type"], field["value"]);
+            => fragments.FragmentParser.Parse((string)field["type"], field["value"]);
 
         private static void AddFragment(IDictionary<string, IFragment> fragments, string name, IFragment fragment)
         {

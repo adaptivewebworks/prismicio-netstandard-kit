@@ -384,7 +384,11 @@ namespace prismic
                         }
                     }
                     c = text[pos];
-                    string escaped = WebUtility.HtmlEncode(c.ToString());
+                    
+                    string escaped = char.IsSurrogate(c)
+                        ? c.ToString()
+                        : WebUtility.HtmlEncode(c.ToString());
+
                     if (stack.Count == 0)
                     {
                         // Top-level text
