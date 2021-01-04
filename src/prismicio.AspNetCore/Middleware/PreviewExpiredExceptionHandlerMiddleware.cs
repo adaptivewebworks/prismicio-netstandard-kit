@@ -19,7 +19,7 @@ namespace prismic.Middleware
         {
             try
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(false);
             }
             catch (PrismicClientException ex) when (ex.Code == PrismicClientException.ErrorCode.INVALID_PREVIEW)
             {

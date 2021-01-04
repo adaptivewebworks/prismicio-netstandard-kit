@@ -74,7 +74,7 @@ namespace prismic
             if (!string.IsNullOrWhiteSpace(accessToken))
                 url += $"?access_token={WebUtility.UrlEncode(accessToken)}";
 
-            JToken json = await _prismicHttpClient.Fetch(url);
+            JToken json = await _prismicHttpClient.Fetch(url).ConfigureAwait(false);
             ApiData apiData = ApiData.Parse(json);
 
             api = new Api(apiData, _prismicHttpClient, _httpContextAccessor);
