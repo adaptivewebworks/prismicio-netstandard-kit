@@ -64,9 +64,9 @@ namespace prismic
                         );
 
                     case HttpStatusCode.NotFound:
-                        errorText = (string)JObject.Parse(body)["error"];
+                        errorText = (string)JObject.Parse(body)["message"];
 
-                        if(errorText == "This preview token has expired")
+                        if(Regex.IsMatch(errorText, @"^Release (?:.*) not found$"))
                             throw new PrismicClientException(PrismicClientException.ErrorCode.INVALID_PREVIEW, errorText);
 
                         throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, body);
