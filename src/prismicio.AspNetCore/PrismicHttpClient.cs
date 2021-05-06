@@ -66,11 +66,11 @@ namespace prismic
                     case HttpStatusCode.NotFound:
                         errorText = (string)JObject.Parse(body)["message"];
 
-                        if(Regex.IsMatch(errorText, @"^Release (?:.*) not found$"))
+                        if (!string.IsNullOrWhiteSpace(errorText) && Regex.IsMatch(errorText, @"^Release (?:.*) not found$"))
                             throw new PrismicClientException(PrismicClientException.ErrorCode.INVALID_PREVIEW, errorText);
 
                         throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, body);
-                        
+
                     default:
                         throw new PrismicClientException(PrismicClientException.ErrorCode.UNEXPECTED, body);
                 }
