@@ -65,6 +65,24 @@ namespace prismic.AspNetCore.Tests
         }
 
         [Fact]
+        public async Task Fetch_returns_invalid_preview_error()
+        {
+            var handlerMock = CreateMockMessageHandler(() => new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.NotFound,
+                Content = new StringContent(
+                    "{\"message\":\"Release https://fake-repo.prismic.io/previews/abc-123-xyz?websitePreviewId=nonsense not found\"}"
+                ),
+            });
+
+            var prismicClient = CreateClient(handlerMock.Object);
+
+            await AssertThrowsPrismicClientException(PrismicFetch(prismicClient), PrismicClientException.ErrorCode.INVALID_PREVIEW);
+            VerifySendAsync(handlerMock, Times.Exactly(1), MethodAndRequestUriMatch());
+        }
+
+
+        [Fact]
         public async Task Fetch_returns_authorization_needed_error()
         {
             var handlerMock = CreateMockMessageHandler(() => new HttpResponseMessage()
