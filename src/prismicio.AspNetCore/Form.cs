@@ -339,7 +339,7 @@ namespace prismic
             public SearchForm Query(params IPredicate[] predicates)
             {
                 var result = "";
-                foreach (Predicate p in predicates)
+                foreach (var p in predicates)
                 {
                     result += p.Q();
                 }
