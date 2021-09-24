@@ -372,7 +372,7 @@ namespace prismic
                     }
                 }
 
-                return Response.Parse(await _prismicHttpClient.Fetch(url));
+                return Response.Parse(await _prismicHttpClient.Fetch(url).ConfigureAwait(false));
             }
 
             public override string ToString() => DictionaryExtensions.GetQueryString(data);
