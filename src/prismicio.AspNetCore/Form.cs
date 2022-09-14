@@ -114,17 +114,14 @@ namespace prismic
 
                 if (fieldDesc.IsMultiple)
                 {
-                    IList<string> existingValue;
                     if (data.ContainsKey(field))
                     {
-                        existingValue = data[field];
+                        data[field] = StringValues.Concat(data[field], value);
                     }
                     else
                     {
-                        existingValue = new List<string>();
+                        data[field] = new StringValues(value);
                     }
-                    existingValue.Add(value);
-                    data[field] = new StringValues(existingValue.ToArray());
                 }
                 else
                 {

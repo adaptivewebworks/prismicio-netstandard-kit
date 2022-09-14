@@ -172,5 +172,58 @@ namespace prismic.AspNetCore.Tests
             Assert.Equal(new DateTime(2017, 1, 13, 11, 45, 21, DateTimeKind.Utc), document.FirstPublicationDate.Value.ToUniversalTime());
             Assert.Equal(new DateTime(2017, 2, 21, 16, 5, 19, DateTimeKind.Utc), document.LastPublicationDate.Value.ToUniversalTime());
         }
+
+        [Fact]
+        public async Task QueryByDocumentTypeForm_ShouldSuccess()
+        {
+            var url = "https://micro.prismic.io/api";
+            Api api = await TestHelper.GetApi(url);
+            var form = api.Form("doc").Ref(api.Master);
+            var query = form.Query(@"[[:d = at(document.type, ""docchapter"")]]");
+
+            var response = await query.Submit();
+
+            var doc = response.Results[0];
+            var author = doc.GetText("docchapter.title");
+            Assert.Equal("Using with other projects", author);
+        }
+
+
+        [Fact]
+        public async Task FormWithMultipleQueries_ShouldSuccess()
+        {
+            var url = "https://micro.prismic.io/api";
+            Api api = await TestHelper.GetApi(url);
+            var form = api.Form("doc").Ref(api.Master);
+            var query = form
+                .Query(@"[[:d = at(document.type, ""docchapter"")]]")
+                .Query(@"[[:d = fulltext(my.docchapter.title, ""Using with other projects"")]]")
+                ;
+
+            var response = await query.Submit();
+
+            var doc = response.Results[0];
+            var author = doc.GetText("docchapter.title");
+            Assert.Equal("Using with other projects", author);
+        }
+
+
+        [Fact]
+        public async Task FormWithMultiplePredicates_ShouldSuccess()
+        {
+            var url = "https://micro.prismic.io/api";
+            Api api = await TestHelper.GetApi(url);
+            var form = api.Form("doc").Ref(api.Master);
+            var query = form.Query(
+                Predicates.At("document.type", "docchapter"),
+                Predicates.Fulltext("my.docchapter.title", "Using with other projects")
+                );
+
+            var response = await query.Submit();
+
+            var doc = response.Results[0];
+            var author = doc.GetText("docchapter.title");
+            Assert.Equal("Using with other projects", author);
+        }
     }
 }
