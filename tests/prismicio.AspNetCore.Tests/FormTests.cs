@@ -52,6 +52,20 @@ namespace prismic.AspNetCore.Tests
             Assert.StartsWith("Unknown field", ex.Message);
         }
 
+        [Fact]
+        public void Set_multiple_predicates_same_field()
+        {
+            var form = GetSearchForm();
+
+            var firstFilter = "[[:d = any(document.type, [\"highlights\"])]]";
+            var secondFilter = "[[:d = in(document.id, [])]]";
+            form.Set("q", firstFilter);
+            form.Set("q", secondFilter);
+
+            var finalForm = form.ToString();
+            Assert.Contains("document.type", finalForm);
+            Assert.Contains("document.id", finalForm);
+        }
 
         private Form.SearchForm GetSearchForm()
         {
